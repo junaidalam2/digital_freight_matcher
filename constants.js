@@ -21,3 +21,6 @@ truckPalletsMax = truckVolume / palletVolume
 palletCostPerMile = truckPalletsMax / costPerMile
 stdPackagePerTruck = truckVolume / stdPackageVolume
 stdPackagePerMile = stdPackagePerTruck / costPerMile
+
+
+
