@@ -39,13 +39,13 @@ const constants = require('./constants.js');
 
 //console.log(constants.maxWeight)
 
+function onRoute() {}
+
 function sufficientVolume() {}
 
 function sufficientWeight() {}
 
 function sufficientTime() {}
-
-function onRoute() {}
 
 function determinePrice() {}
 
