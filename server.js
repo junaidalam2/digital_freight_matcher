@@ -1,5 +1,5 @@
 
-
+const constants = require('./constants.js');
 
 /*
 
@@ -37,11 +37,7 @@
 
 // Route 1
 
-
-
-
-
-
+//console.log(constants.maxWeight)
 
 function sufficientVolume() {}
 

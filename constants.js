@@ -1,26 +1,35 @@
 
 
+const costPerMile = 1.816923077
 
-//Truck Info
-costPerMile = 1.816923077
+    //Standard Package
+const stdPackageWeight = 66 // lbs
+const stdPackageVolume = 18 // cubic feet
 
-//Standard Package
-stdPackageWeight = 66 // lbs
-stdPackageVolume = 18 // cubic feet
+    //Pallet Info
+const palletWeight = 440 // lbs
+const palletVolume = 64 // cubic feet
 
-//Pallet Info
-palletWeight = 440 // lbs
-palletVolume = 64 // cubic feet
+const maxWeight = 9180 // lbs
+const truckVolume = 1700 // cubic feet
 
-
-
-//Cargo Info.
-maxWeight = 9180 // lbs
-truckVolume = 1700 // cubic feet
-truckPalletsMax = truckVolume / palletVolume
-palletCostPerMile = truckPalletsMax / costPerMile
-stdPackagePerTruck = truckVolume / stdPackageVolume
-stdPackagePerMile = stdPackagePerTruck / costPerMile
+const truckPalletsMax = truckVolume / palletVolume
+const palletCostPerMile = truckPalletsMax / costPerMile
+const stdPackagePerTruck = truckVolume / stdPackageVolume
+const stdPackagePerMile = stdPackagePerTruck / costPerMile
 
 
+module.exports = {
 
+    costPerMile: costPerMile,
+    stdPackageWeight: stdPackageWeight,
+    stdPackageVolume: stdPackageVolume,
+    palletWeight: palletWeight,
+    palletVolume: palletVolume,
+    maxWeight: maxWeight,
+    truckVolume: truckVolume,
+    truckPalletsMax: truckPalletsMax,
+    palletCostPerMile: palletCostPerMile,
+    stdPackagePerTruck: stdPackagePerTruck,
+    stdPackagePerMile: stdPackagePerMile,
+}
