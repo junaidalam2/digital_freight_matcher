@@ -37,3 +37,25 @@
 
 // Route 1
 
+
+
+
+
+
+
+function sufficientVolume() {}
+
+function sufficientWeight() {}
+
+function sufficientTime() {}
+
+function onRoute() {}
+
+function determinePrice() {}
+
+function determineDate() {}
+
+
+
+
+
