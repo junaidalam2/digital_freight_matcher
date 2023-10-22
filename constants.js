@@ -18,6 +18,9 @@ const palletCostPerMile = truckPalletsMax / costPerMile
 const stdPackagePerTruck = truckVolume / stdPackageVolume
 const stdPackagePerMile = stdPackagePerTruck / costPerMile
 
+const truckMinPerDay = 10 * 60;
+const truckPickDropTimeMin = 15;
+
 
 module.exports = {
 
@@ -32,4 +35,6 @@ module.exports = {
     palletCostPerMile: palletCostPerMile,
     stdPackagePerTruck: stdPackagePerTruck,
     stdPackagePerMile: stdPackagePerMile,
+    truckMinPerDay: truckMinPerDay,
+    truckPickDropTimeMin: truckPickDropTimeMin,
 }

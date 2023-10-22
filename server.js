@@ -34,18 +34,40 @@ const constants = require('./constants.js');
 
 */
 
+route1TimeMin = 4 * 60;
 
-// Route 1
 
-//console.log(constants.maxWeight)
+function sufficientTime(routeTime) {
+
+    let numberOfStops = 2
+
+    return routeTime + constants.truckPickDropTimeMin * numberOfStops < constants.truckMinPerDay
+
+    // later - check if drop off at existing stop location. Then, number of stops = 1. 
+
+}
 
 function onRoute() {}
 
-function sufficientVolume() {}
+function sufficientVolume() {
 
-function sufficientWeight() {}
+// find min capacity on entire route => if capacity return true
 
-function sufficientTime() {}
+// see if capacity on portion of route that will be used
+    // compile hash of coordinates and capacity for the day
+    // for each key-value pair, check for capacity
+    // if no capacity at any point, return false
+
+    // later - query db or key-value pair at min point on route
+
+}
+
+function sufficientWeight() {
+
+// similar logic to sufficient volume
+
+}
+
 
 function determinePrice() {}
 
