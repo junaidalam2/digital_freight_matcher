@@ -20,6 +20,7 @@ const stdPackagePerMile = stdPackagePerTruck / costPerMile
 
 const truckMinPerDay = 10 * 60;
 const truckPickDropTimeMin = 15;
+const averageTruckSpeedInMiles = 50 // miles per hour 
 
 const markup = 0.5;
 
@@ -39,5 +40,6 @@ module.exports = {
     stdPackagePerMile: stdPackagePerMile,
     truckMinPerDay: truckMinPerDay,
     truckPickDropTimeMin: truckPickDropTimeMin,
+    averageTruckSpeedInMiles: averageTruckSpeedInMiles,
     markup: markup,
 }

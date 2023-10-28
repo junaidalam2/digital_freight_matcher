@@ -12,6 +12,7 @@ class Route {
         this.anschorLatitude = latitude;
         this.milesWithCargo = milesWithCargo;
         this.totalMiles = this.milesWithCargo * 2;  // this seems overly simplistic. I believe we'll need to change this calc.
+        this.timeInMinutes = this.totalMiles * constants.averageTruckSpeedInMiles,
         this.operationalTruckCost = constants.costPerMile * this.totalMiles;
         this.palletsOccupied = palletsOccupied;
         this.cargoCost = this.totalMiles * constants.palletCostPerMile * this.palletsOccupied;
@@ -28,7 +29,7 @@ class Route {
 
 
 
-    
+
 }
 
 const route1 = new Route(1, 'Ringgold', 101, 12, 2, 34.9161210050057, -85.1103924702221)
