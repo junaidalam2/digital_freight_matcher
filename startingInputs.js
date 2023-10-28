@@ -12,7 +12,7 @@ class Route {
         this.anschorLatitude = latitude;
         this.milesWithCargo = milesWithCargo;
         this.totalMiles = this.milesWithCargo * 2;  // this seems overly simplistic. I believe we'll need to change this calc.
-        this.timeInMinutes = this.totalMiles * constants.averageTruckSpeedInMiles,
+        this.timeInMinutes = this.totalMiles * constants.averageTruckSpeedInMiles * 60,
         this.operationalTruckCost = constants.costPerMile * this.totalMiles;
         this.palletsOccupied = palletsOccupied;
         this.cargoCost = this.totalMiles * constants.palletCostPerMile * this.palletsOccupied;
@@ -23,12 +23,9 @@ class Route {
         this.availableWeight = constants.maxWeight - this.palletsOccupied * constants.palletWeight;
         this.availableStandardPackages = this.availableVolume / constants.stdPackageVolume
         this.projectPricePerPackage = this.emptyCargoCost / this.availableStandardPackages * ( 1 + constants.markup);
-        this.projectedRevenueFullTruck =  projectPricePerPackage * this.availableStandardPackages + this.price
+        this.projectedRevenueFullTruck =  projectPricePerPackage * this.availableStandardPackages + this.price;
 
     }
-
-
-
 
 }
 
