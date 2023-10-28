@@ -1,5 +1,6 @@
 
 const constants = require('./constants.js');
+const constants = require('./startInputs.js');
 
 /*
 

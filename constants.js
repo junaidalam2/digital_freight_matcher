@@ -2,11 +2,11 @@
 
 const costPerMile = 1.816923077
 
-    //Standard Package
+//Standard Package
 const stdPackageWeight = 66 // lbs
 const stdPackageVolume = 18 // cubic feet
 
-    //Pallet Info
+//Pallet Info
 const palletWeight = 440 // lbs
 const palletVolume = 64 // cubic feet
 
@@ -20,6 +20,8 @@ const stdPackagePerMile = stdPackagePerTruck / costPerMile
 
 const truckMinPerDay = 10 * 60;
 const truckPickDropTimeMin = 15;
+
+const markup = 0.5;
 
 
 module.exports = {
@@ -37,4 +39,5 @@ module.exports = {
     stdPackagePerMile: stdPackagePerMile,
     truckMinPerDay: truckMinPerDay,
     truckPickDropTimeMin: truckPickDropTimeMin,
+    markup: markup,
 }
