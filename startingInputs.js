@@ -1,5 +1,8 @@
 
 const constants = require('./constants.js');
+const geodesic = require("geographiclib-geodesic"); // https://geographiclib.sourceforge.io/html/js/
+const DMS = require("geographiclib-dms");
+const geod = geodesic.Geodesic.WGS84;
 
 
 class Route {
@@ -23,13 +26,15 @@ class Route {
         this.availableWeight = constants.maxWeight - this.palletsOccupied * constants.palletWeight;
         this.availableStandardPackages = this.availableVolume / constants.stdPackageVolume
         this.projectPricePerPackage = this.emptyCargoCost / this.availableStandardPackages * ( 1 + constants.markup);
-        this.projectedRevenueFullTruck =  projectPricePerPackage * this.availableStandardPackages + this.price;
+        this.projectedRevenueFullTruck =  this.projectPricePerPackage * this.availableStandardPackages + this.price;
         this.marginalCostPerOrder = null;
+        this.marginalDistanceInMiles = null;
 
     }
 
-    marginalCost(additionalPallets) {
-        this.marginalCostPerOrder = additionalPallets * this.totalMiles * constants.palletCostPerMile
+    marginalCost(additionalPallets, additionalMilesWithCargo) {
+        this.marginalCostPerOrder = additionalPallets * this.totalMiles * constants.palletCostPerMile;
+        this.marginalCostPerOrder += constants.costPerMile * additionalMilesWithCargo; 
     }
 
     resetMarginalCost() {
@@ -37,7 +42,41 @@ class Route {
     }
 
 
+    distanceToRoute(point1, point2, limit = 1000) { // distance in meters
+        if (geod.Inverse(point1["latitude"], point1["longitude"], point2["latitude"], point2["longitude"]) <= limit) return true 
+        return false
+    }
+
+    isOnRoute(pickUpHash, dropOffHash) {
+
+        let startingOnRoute = false;
+        let endingOnRoute = false;
+
+        if(distanceToRoute({'latitude': pickUpHash["latitude"], 'longitude': this.anschorLatitude}, {'latitude': this.anschorLatitude, 'longitude': this.anchorLongitude}) 
+            && distanceToRoute({'latitude': this.anschorLatitude, 'longitude': pickUpHash["longitude"]}, {'latitude': this.anschorLatitude, 'longitude': this.anchorLongitude})) {
+                startingOnRoute = true;
+        } 
+        
+
+        if(distanceToRoute({'latitude': dropOffHash["latitude"], 'longitude': constants.hubLongitude}, {'latitude': constants.hubLatitude, 'longitude': constants.hubLongitude}) 
+            && distanceToRoute({'latitude': constants.hubLatitude, 'longitude': dropOffHash["longitude"]}, {'latitude': constants.hubLatitude, 'longitude': constants.hubLongitude})) {
+                endingOnRoute = true;
+        } 
+
+        return startingOnRoute && endingOnRoute;
+    }
+
+
+    marginalDistanceCalculator() {
+        this.marginalDistanceInMiles = null;
+
+
+
+    }
+
+
 }
+
 
 const route1 = new Route(1, 'Ringgold', 101, 12, 2, 34.9161210050057, -85.1103924702221)
 const route2 = new Route(2, 'Augusta', 94.6, 10, 2, 33.4676716195606, -81.8920767938344)

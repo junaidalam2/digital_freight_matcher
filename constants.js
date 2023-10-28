@@ -24,6 +24,11 @@ const averageTruckSpeedInMiles = 50 // miles per hour
 
 const markup = 0.5;
 
+const hubLongitude = 33.7544138157922;
+const hubLatitude = -84.3875298776525;
+
+
+
 
 module.exports = {
 
@@ -42,4 +47,7 @@ module.exports = {
     truckPickDropTimeMin: truckPickDropTimeMin,
     averageTruckSpeedInMiles: averageTruckSpeedInMiles,
     markup: markup,
+    hubLongitude: hubLongitude,
+    hubLatitude: hubLatitude,
+    
 }
