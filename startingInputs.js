@@ -42,6 +42,8 @@ class Route {
     }
 
 
+
+    /* DISTANCE CALC BELOW IS INCORRECT. ALSO, NEED TO CALCULATE 'CROSS-TRACK' DISTANCE. WORKING ON IT IN 'DISTANCE.JS'.
     checkDistanceToRoute(point1, point2, limit = 1000) { // distance in meters
         if (geod.Inverse(point1["latitude"], point1["longitude"], point2["latitude"], point2["longitude"]) <= limit) return true 
         return false
@@ -73,7 +75,7 @@ class Route {
          this.marginalDistanceInMiles = distanceInMeters;
 
     }
-
+    */
 
 }
 
