@@ -1,0 +1,12 @@
+{
+  "name": "digital_freight_matcher",
+  "version": "1.0.0",
+  "description": "<p>Infinity and Beyond, a family-owned trucking enterprise based in Atlanta, GA, recently landed a significant contract with the Too-Big-To-Fail company. This substantial collaboration led them to acquire five new trucks and establish expansive routes spanning the entirety of the state. Despite having fixed rates determined by the volume of cargo transported, the company faces challenges. The mounting pressures of inflation and decreased contracted cargo have caused them to feel the financial pinch on some of these routes.</p>\r <p>The dilemma deepens when considering their binding four-year contract that prevents them from canceling any existing routes. This contractual commitment, coupled with the specialized trucks they've already invested in for the project, has placed them in a tight spot. The repercussions of prematurely terminating the contract would involve hefty fines, and the ongoing maintenance of the trucks only adds to their predicament.</p>\r <p>In search of a solution, the owners of Infinity and Beyond, Mr. and Miss. Lightyear stumbled upon news about Digital Freight Matching (DFM). Investing their weekend into comprehending this concept, they began to see it as a potential lifeline for their company's current challenges.</p>",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -3,7 +3,7 @@ const constants = require('./constants.js');
 const geodesic = require("geographiclib-geodesic"); // https://geographiclib.sourceforge.io/html/js/
 const DMS = require("geographiclib-dms");
 const geod = geodesic.Geodesic.WGS84;
-
+// https://stackoverflow.com/questions/20231258/minimum-distance-between-a-point-and-a-line-in-latitude-longitude?noredirect=1&lq=1
 
 class Route {
 
@@ -42,7 +42,7 @@ class Route {
     }
 
 
-    distanceToRoute(point1, point2, limit = 1000) { // distance in meters
+    checkDistanceToRoute(point1, point2, limit = 1000) { // distance in meters
         if (geod.Inverse(point1["latitude"], point1["longitude"], point2["latitude"], point2["longitude"]) <= limit) return true 
         return false
     }
@@ -68,9 +68,9 @@ class Route {
 
 
     marginalDistanceCalculator() {
-        this.marginalDistanceInMiles = null;
+         distanceInMeters = geod.Inverse(point1["latitude"], point1["longitude"], point2["latitude"], point2["longitude"]);
 
-
+         this.marginalDistanceInMiles = distanceInMeters;
 
     }
 
