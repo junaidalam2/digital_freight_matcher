@@ -1,5 +1,6 @@
 
 const constants = require('./constants.js');
+const distance = require('./distance.js');
 const geodesic = require("geographiclib-geodesic"); // https://geographiclib.sourceforge.io/html/js/
 const DMS = require("geographiclib-dms");
 const geod = geodesic.Geodesic.WGS84;
@@ -29,6 +30,8 @@ class Route {
         this.projectedRevenueFullTruck =  this.projectPricePerPackage * this.availableStandardPackages + this.price;
         this.marginalCostPerOrder = null;
         this.marginalDistanceInMiles = null;
+        this.prposedPickUpDistanceToRoute = null;
+        this.prposedDropOffDistanceToRoute = null;
 
     }
 
@@ -41,6 +44,35 @@ class Route {
         this.marginalCostPerOrder = null
     }
 
+    distanceCalculatorKM(point1Hash, point2Hash) {
+
+        const distanceInKM = geod.Inverse(point1Hash['latitude'], point1Hash['longitude'], point2Hash['latitude'], point2Hash['longitude']).s12 / 1000;  // dividing by 1000 to convert to kilometres
+    
+        return distanceInKM;
+    }
+    
+    obtainBearing(latitudePoint1, latitudePoint2, longitudePoint1, longitudePoint2) {
+    
+        const x = Math.sin(longitudePoint2 - longitudePoint1) * Math.cos(latitudePoint2)
+        const y = Math.cos(latitudePoint1) * Math.sin(latitudePoint2) - Math.sin(latitudePoint1) * Math.cos(latitudePoint2) * Math.cos(longitudePoint2 - longitudePoint1)
+    
+        const bearingInRadians = Math.atan2(x, y);
+        const bearingInDegrees = ( bearingInRadians * 180 / Math.PI + 360) % 360; 
+        
+        return bearingInDegrees;
+    }
+    
+    crossTrackDistanceCalc(pickUpCoordinates, routeStartCoordinates, routeEndCoordinates) {
+    
+        const distancePickUpToRouteStart = distanceCalculatorKM(routeStartCoordinates, pickUpCoordinates);
+    
+        const bearing1 = obtainBearing(routeStartCoordinates['latitude'], routeStartCoordinates['longitude'], pickUpCoordinates['latitude'], pickUpCoordinates['longitude']);
+        const bearing2 = obtainBearing(routeStartCoordinates['latitude'], routeStartCoordinates['longitude'], routeEndCoordinates['latitude'], routeEndCoordinates['longitude']);
+    
+        const crossTrackDistance = Math.asin( Math.sin( distancePickUpToRouteStart / 6371) * Math.sin((bearing1 - bearing2) * (Math.PI / 180))) * 6371; // kilometres
+    
+        return crossTrackDistance;
+    }
 
 
     /* DISTANCE CALC BELOW IS INCORRECT. ALSO, NEED TO CALCULATE 'CROSS-TRACK' DISTANCE. WORKING ON IT IN 'DISTANCE.JS'.
