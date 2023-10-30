@@ -12,8 +12,7 @@ class Route {
 
         this.routeNumber = routeNumber;
         this.anchorPoint = anchorPoint;
-        this.anchorLongitude = longitude;
-        this.anschorLatitude = latitude;
+        this.anchorCoord = {'latitude': latitude, 'longitude': longitude }; 
         this.milesWithCargo = milesWithCargo;
         this.totalMiles = this.milesWithCargo * 2;  // this seems overly simplistic. I believe we'll need to change this calc.
         this.timeInMinutes = this.totalMiles * constants.averageTruckSpeedInMiles * 60;
@@ -30,8 +29,11 @@ class Route {
         this.projectedRevenueFullTruck =  this.projectPricePerPackage * this.availableStandardPackages + this.price;
         this.marginalCostPerOrder = null;
         this.marginalDistanceInMiles = null;
-        this.prposedPickUpDistanceToRoute = null;
-        this.prposedDropOffDistanceToRoute = null;
+        this.proposedOrderPickUpCoord = null;
+        this.proposedOrderDropOffCoord = null;
+        this.proposedPickUpDistanceToRoute = null;
+        this.proposedDropOffDistanceToRoute = null;
+        this.orderOnRoute = false;
 
     }
 
@@ -62,11 +64,11 @@ class Route {
         return bearingInDegrees;
     }
     
-    crossTrackDistanceCalc(pickUpCoordinates, routeStartCoordinates, routeEndCoordinates) {
+    crossTrackDistanceCalc(orderCoordinates, routeStartCoordinates, routeEndCoordinates) {
     
-        const distancePickUpToRouteStart = distanceCalculatorKM(routeStartCoordinates, pickUpCoordinates);
+        const distancePickUpToRouteStart = distanceCalculatorKM(routeStartCoordinates, orderCoordinates);
     
-        const bearing1 = obtainBearing(routeStartCoordinates['latitude'], routeStartCoordinates['longitude'], pickUpCoordinates['latitude'], pickUpCoordinates['longitude']);
+        const bearing1 = obtainBearing(routeStartCoordinates['latitude'], routeStartCoordinates['longitude'], orderCoordinates['latitude'], orderCoordinates['longitude']);
         const bearing2 = obtainBearing(routeStartCoordinates['latitude'], routeStartCoordinates['longitude'], routeEndCoordinates['latitude'], routeEndCoordinates['longitude']);
     
         const crossTrackDistance = Math.asin( Math.sin( distancePickUpToRouteStart / 6371) * Math.sin((bearing1 - bearing2) * (Math.PI / 180))) * 6371; // kilometres
@@ -75,39 +77,13 @@ class Route {
     }
 
 
-    /* DISTANCE CALC BELOW IS INCORRECT. ALSO, NEED TO CALCULATE 'CROSS-TRACK' DISTANCE. WORKING ON IT IN 'DISTANCE.JS'.
-    checkDistanceToRoute(point1, point2, limit = 1000) { // distance in meters
-        if (geod.Inverse(point1["latitude"], point1["longitude"], point2["latitude"], point2["longitude"]) <= limit) return true 
-        return false
+    isOnRoute() {
+
+        this.proposedPickUpDistanceToRoute = crossTrackDistanceCalc(this.proposedOrderPickUpCoord, this.anchorCoord, constants.hubCoordinates)
+        this.proposedDropOffDistanceToRoute = crossTrackDistanceCalc(this.proposedOrderDropOffCoord, this.anchorCoord, constants.hubCoordinates)
+
+        if(this.proposedPickUpDistanceToRoute <= 1 && this.proposedDropOffDistanceToRoute <= 1) this.orderOnRoute = true;
     }
-
-    isOnRoute(pickUpHash, dropOffHash) {
-
-        let startingOnRoute = false;
-        let endingOnRoute = false;
-
-        if(distanceToRoute({'latitude': pickUpHash["latitude"], 'longitude': this.anschorLatitude}, {'latitude': this.anschorLatitude, 'longitude': this.anchorLongitude}) 
-            && distanceToRoute({'latitude': this.anschorLatitude, 'longitude': pickUpHash["longitude"]}, {'latitude': this.anschorLatitude, 'longitude': this.anchorLongitude})) {
-                startingOnRoute = true;
-        } 
-        
-
-        if(distanceToRoute({'latitude': dropOffHash["latitude"], 'longitude': constants.hubLongitude}, {'latitude': constants.hubLatitude, 'longitude': constants.hubLongitude}) 
-            && distanceToRoute({'latitude': constants.hubLatitude, 'longitude': dropOffHash["longitude"]}, {'latitude': constants.hubLatitude, 'longitude': constants.hubLongitude})) {
-                endingOnRoute = true;
-        } 
-
-        return startingOnRoute && endingOnRoute;
-    }
-
-
-    marginalDistanceCalculator() {
-         distanceInMeters = geod.Inverse(point1["latitude"], point1["longitude"], point2["latitude"], point2["longitude"]);
-
-         this.marginalDistanceInMiles = distanceInMeters;
-
-    }
-    */
 
 }
 
