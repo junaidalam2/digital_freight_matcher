@@ -20,9 +20,9 @@ class Route {
         this.palletsOccupied = palletsOccupied;
         this.cargoCost = this.totalMiles * constants.palletCostPerMile * this.palletsOccupied;
         this.emptyCargoCost = this.operationalTruckCost - this.cargoCost;
-        this.price = this.cargoCost * constants.markup; // based on cargo cost
+        this.price = this.cargoCost * (1 + constants.markup); // based on cargo cost
         this.pickUpDropOffCounter =  pickUpDropOffCounter;
-        this.availableVolume = this.palletsOccupied * constants.palletVolume * constants.truckVolume;
+        this.availableVolume = constants.truckVolume - this.palletsOccupied * constants.palletVolume;
         this.availableWeight = constants.maxWeight - this.palletsOccupied * constants.palletWeight;
         this.availableStandardPackages = this.availableVolume / constants.stdPackageVolume
         this.projectPricePerPackage = this.emptyCargoCost / this.availableStandardPackages * ( 1 + constants.markup);
@@ -111,3 +111,12 @@ module.exports = {
     routeData: routeData,
       
 }
+
+
+console.log(route1.marginalDistanceInMiles)
+console.log(route1.proposedOrderPickUpCoord)
+console.log(route1.proposedDropOffDistanceToRoute)
+console.log(route1.proposedPickUpDistanceToRoute)
+console.log(route1.proposedDropOffDistanceToRoute)
+console.log(route1.orderOnRoute)
+

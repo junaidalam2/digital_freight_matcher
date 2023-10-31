@@ -14,7 +14,7 @@ const maxWeight = 9180 // lbs
 const truckVolume = 1700 // cubic feet
 
 const truckPalletsMax = truckVolume / palletVolume
-const palletCostPerMile = truckPalletsMax / costPerMile
+const palletCostPerMile = costPerMile / truckPalletsMax
 const stdPackagePerTruck = truckVolume / stdPackageVolume
 const stdPackagePerMile = stdPackagePerTruck / costPerMile
 
