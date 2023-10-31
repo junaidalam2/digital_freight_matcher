@@ -8,10 +8,10 @@ const geod = geodesic.Geodesic.WGS84;
 
 class Route {
 
-    constructor(routeNumber, anchorPoint, milesWithCargo, palletsOccupied, pickUpDropOffCounter, longitude, latitude) {
+    constructor(routeNumber, anchorPointName, milesWithCargo, palletsOccupied, pickUpDropOffCounter, longitude, latitude) {
 
         this.routeNumber = routeNumber;
-        this.anchorPoint = anchorPoint;
+        this.anchorPointName = anchorPointName;
         this.anchorCoord = {'latitude': latitude, 'longitude': longitude }; 
         this.milesWithCargo = milesWithCargo;
         this.totalMiles = this.milesWithCargo * 2;  // this seems overly simplistic. I believe we'll need to change this calc.
@@ -66,10 +66,10 @@ class Route {
     
     crossTrackDistanceCalc(orderCoordinates, routeStartCoordinates, routeEndCoordinates) {
     
-        const distancePickUpToRouteStart = distanceCalculatorKM(routeStartCoordinates, orderCoordinates);
+        const distancePickUpToRouteStart = this.distanceCalculatorKM(routeStartCoordinates, orderCoordinates);
     
-        const bearing1 = obtainBearing(routeStartCoordinates['latitude'], routeStartCoordinates['longitude'], orderCoordinates['latitude'], orderCoordinates['longitude']);
-        const bearing2 = obtainBearing(routeStartCoordinates['latitude'], routeStartCoordinates['longitude'], routeEndCoordinates['latitude'], routeEndCoordinates['longitude']);
+        const bearing1 = this.obtainBearing(routeStartCoordinates['latitude'], routeStartCoordinates['longitude'], orderCoordinates['latitude'], orderCoordinates['longitude']);
+        const bearing2 = this.obtainBearing(routeStartCoordinates['latitude'], routeStartCoordinates['longitude'], routeEndCoordinates['latitude'], routeEndCoordinates['longitude']);
     
         const crossTrackDistance = Math.asin( Math.sin( distancePickUpToRouteStart / 6371) * Math.sin((bearing1 - bearing2) * (Math.PI / 180))) * 6371; // kilometres
     
@@ -79,10 +79,14 @@ class Route {
 
     isOnRoute() {
 
-        this.proposedPickUpDistanceToRoute = crossTrackDistanceCalc(this.proposedOrderPickUpCoord, this.anchorCoord, constants.hubCoordinates)
-        this.proposedDropOffDistanceToRoute = crossTrackDistanceCalc(this.proposedOrderDropOffCoord, this.anchorCoord, constants.hubCoordinates)
+        this.proposedPickUpDistanceToRoute = this.crossTrackDistanceCalc(this.proposedOrderPickUpCoord, this.anchorCoord, constants.hubCoordinates)
+        this.proposedDropOffDistanceToRoute = this.crossTrackDistanceCalc(this.proposedOrderDropOffCoord, this.anchorCoord, constants.hubCoordinates)
 
-        if(this.proposedPickUpDistanceToRoute <= 1 && this.proposedDropOffDistanceToRoute <= 1) this.orderOnRoute = true;
+        if(this.proposedPickUpDistanceToRoute <= 1 && this.proposedDropOffDistanceToRoute <= 1) {
+            this.orderOnRoute = true;
+        } else {
+            this.orderOnRoute = false;
+        }
     }
 
 }
@@ -112,11 +116,12 @@ module.exports = {
       
 }
 
+/*
+//34.9161210050057, -85.1103924702221
 
-console.log(route1.marginalDistanceInMiles)
-console.log(route1.proposedOrderPickUpCoord)
-console.log(route1.proposedDropOffDistanceToRoute)
-console.log(route1.proposedPickUpDistanceToRoute)
-console.log(route1.proposedDropOffDistanceToRoute)
+route1.proposedOrderPickUpCoord = {'latitude': 34.9161210050057, 'longitude': -85.1103924702221 }; 
+route1.proposedOrderDropOffCoord = {'latitude': 84.3875298776525, 'longitude': 33.7544138157922 }; 
+
+route1.isOnRoute()
 console.log(route1.orderOnRoute)
-
+*/
