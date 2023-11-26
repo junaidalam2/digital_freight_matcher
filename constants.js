@@ -23,7 +23,7 @@ const truckPickDropTimeMin = 15;
 const averageTruckSpeedInMiles = 50 // miles per hour 
 
 const markup = 0.5;
-const hubCoordinates = {'latitude': 84.3875298776525, 'longitude': 33.7544138157922 }; 
+const hubCoordinates = {'latitude': 33.7544138157922, 'longitude': -84.3875298776525 }; 
 
 
 module.exports = {
