@@ -46,6 +46,7 @@ class Route {
         this.marginalCostPerOrder = null
     }
 
+    /*
     distanceCalculatorKM(point1Hash, point2Hash) {
 
         const distanceInKM = geod.Inverse(point1Hash['latitude'], point1Hash['longitude'], point2Hash['latitude'], point2Hash['longitude']).s12 / 1000;  // dividing by 1000 to convert to kilometres
@@ -74,15 +75,88 @@ class Route {
         const crossTrackDistance = Math.asin( Math.sin( distancePickUpToRouteStart / 6371) * Math.sin((bearing1 - bearing2) * (Math.PI / 180))) * 6371; // kilometres
     
         return crossTrackDistance;
+    }*/
+
+    toRadians(degrees) {
+        return degrees * (Math.PI / 180);
+    }
+
+    haversine(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Earth radius in kilometers
+      
+        const dLat = this.toRadians(lat2 - lat1);
+        const dLon = this.toRadians(lon2 - lon1);
+      
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(this.toRadians(lat1)) * Math.cos(this.toRadians(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      
+        const distance = R * c;
+      
+        return distance;
+    }
+
+    crossTrackDistance(lat, lon, lat1, lon1, lat2, lon2) {
+        const d13 = this.haversine(lat, lon, lat1, lon1);
+        const theta13 = this.toRadians(this.bearing(lat1, lon1, lat, lon));
+        const theta12 = this.toRadians(this.bearing(lat1, lon1, lat2, lon2));
+      
+        const dxt = Math.asin(Math.sin(d13 / 6371) * Math.sin(theta13 - theta12)) * 6371;
+      
+        return dxt;
+    }
+
+
+    bearing(lat1, lon1, lat2, lon2) {
+        const dLon = this.toRadians(lon2 - lon1);
+      
+        const y = Math.sin(dLon) * Math.cos(this.toRadians(lat2));
+        const x =
+          Math.cos(this.toRadians(lat1)) * Math.sin(this.toRadians(lat2)) -
+          Math.sin(this.toRadians(lat1)) * Math.cos(this.toRadians(lat2)) * Math.cos(dLon);
+      
+        const brng = Math.atan2(y, x);
+      
+        // Convert bearing from radians to degrees
+        const brngDegrees = (this.toRadians(brng) + 360) % 360;
+      
+        return brngDegrees;
     }
 
 
     isOnRoute() {
+        
+        this.proposedPickUpDistanceToRoute = this.crossTrackDistance(
+            this.proposedOrderPickUpCoord['latitude'],
+            this.proposedOrderPickUpCoord['longitude'],
+            this.anchorCoord['latitude'],
+            this.anchorCoord['longitude'],
+            constants.hubCoordinates['latitude'],
+            constants.hubCoordinates['longitude'],
+          );
 
-        this.proposedPickUpDistanceToRoute = this.crossTrackDistanceCalc(this.proposedOrderPickUpCoord, this.anchorCoord, constants.hubCoordinates)
-        this.proposedDropOffDistanceToRoute = this.crossTrackDistanceCalc(this.proposedOrderDropOffCoord, this.anchorCoord, constants.hubCoordinates)
+        console.log(this.proposedPickUpDistanceToRoute)
 
-        if(this.proposedPickUpDistanceToRoute <= 1 && this.proposedDropOffDistanceToRoute <= 1) {
+        this.proposedDropOffDistanceToRoute = this.crossTrackDistance(
+            this.proposedOrderDropOffCoord['latitude'],
+            this.proposedOrderDropOffCoord['longitude'],
+            this.anchorCoord['latitude'],
+            this.anchorCoord['longitude'],
+            constants.hubCoordinates['latitude'],
+            constants.hubCoordinates['longitude'],
+          );
+
+        console.log(this.proposedDropOffDistanceToRoute)
+
+        //const distanceInKM = geod.Inverse(point1Hash['latitude'], point1Hash['longitude'], point2Hash['latitude'], point2Hash['longitude']).s12 / 1000;  // dividing by 1000 to convert to kilometres
+
+
+        //this.proposedPickUpDistanceToRoute = this.crossTrackDistanceCalc(this.proposedOrderPickUpCoord, this.anchorCoord, constants.hubCoordinates)
+        //this.proposedDropOffDistanceToRoute = this.crossTrackDistanceCalc(this.proposedOrderDropOffCoord, this.anchorCoord, constants.hubCoordinates)
+
+        if(Math.abs(this.proposedPickUpDistanceToRoute) <= 1 && Math.abs(this.proposedDropOffDistanceToRoute) <= 1) {
             this.orderOnRoute = true;
         } else {
             this.orderOnRoute = false;
@@ -116,12 +190,20 @@ module.exports = {
       
 }
 
-/*
+
 //34.9161210050057, -85.1103924702221
 
-route1.proposedOrderPickUpCoord = {'latitude': 34.9161210050057, 'longitude': -85.1103924702221 }; 
-route1.proposedOrderDropOffCoord = {'latitude': 84.3875298776525, 'longitude': 33.7544138157922 }; 
+//route1.proposedOrderPickUpCoord = {'latitude': 34.9161210050057, 'longitude': -85.1103924702221 }; 
+//route1.proposedOrderDropOffCoord = {'latitude': 34.9161210050057, 'longitude': -85.1103924702221 }; 
+
+route1.proposedOrderPickUpCoord = {'latitude': 33.7544138157922, 'longitude': -84.3875298776525 }; 
+route1.proposedOrderDropOffCoord = {'latitude': 34.9161210050057, 'longitude': -85.1103924702221 }; 
+
+//console.log(route1.proposedOrderPickUpCoord)
+//console.log(route1.proposedOrderDropOffCoord)
+
+//console.log(route1.routeNumber)
 
 route1.isOnRoute()
 console.log(route1.orderOnRoute)
-*/
+
