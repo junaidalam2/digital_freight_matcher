@@ -80,6 +80,7 @@ class Route {
     }
     
 
+
     
 
     updateOrder(order) {
@@ -218,11 +219,11 @@ const order = {
         "longitude": -85.08447506395166
     }
 };
-const order2 = {
-    1,"[12, 42, standard]",
-    "{lat: 33.78015129657219,lng: -84.34128279641483}",
-    "{lat: 33.662866638790945,lng: -84.26739402810634}"
-}
+// const order2 = {
+//     1,"[12, 42, standard]",
+//     "{lat: 33.78015129657219,lng: -84.34128279641483}",
+//     "{lat: 33.662866638790945,lng: -84.26739402810634}"
+// }
 
 const transformedOrder = convertOrderFormat(order);
 let routeToUpdate;
@@ -246,64 +247,50 @@ routeToUpdate.updateOrder(transformedOrder);
 console.log("243R2Up: ", routeToUpdate);
 
 // determine if enough weight capacity
+// CBM (vol.), weight (pounds), type
 
-
-
-// if (updatedRouteKey && routeData[updatedRouteKey]) {
-    
-    // routeToUpdate = routeNum;
-    // console.log("242R2Up: ", routeToUpdate);
-
-    // routeToUpdate.updateOrder(transformedOrder);
-    // console.log(`228: Order assigned to route ${routeNum}.`);
-
-// } else {
-//     console.log("238No route found for the order.");
+// // const order2 = {
+//     1,"[12, 42, standard]",
+//     "{lat: 33.78015129657219,lng: -84.34128279641483}",
+//     "{lat: 33.662866638790945,lng: -84.26739402810634}"
 // }
 
-// set the proposed order drop-off coordinates
-// route1.proposedOrderDropOffCoord = order.dropOff;
+// sufficient volume? this.volume <= 26.6; total vol (1700 ft^3) - (pallets * vol[64])
+// package volume = this.volume 
 
-// Test if the point is on the route
-// if (routeToUpdate.isOnRouteWithTurf(pointLatitude, pointLongitude)) {
-//     console.log("246pointLatitude: ", pointLatitude);
-//     console.log("246pointLongitude: ", pointLongitude);
-//     console.log("246Point is on route.");
-//     } else {
-//     console.log("248Point is not on the route");
-// }
+// need volume to pallet; 
+// max volume = 1700;
+// current volume
+// this.volume = 
 
 
+// CHECK FOR VOLUME; boolean
+// if current volume + this.volume <= 1700, meets_Volume = true
+
+// sufficient weight: 9180 lbs max; weight = total weight - (pallets * weight[440])
+// CHECK FOR WEIGHT; boolean
+// max weight
+// current weight
+// this.weight
+// current weight + this.weight <= 9180
+
+// CHECK FOR TIME; boolean
+// this.time = 30 (rounded; if km < 1 time is negligible)
+// time for route
+// max time = 10 hours
+// total time + 30 <= time max
 
 
-// route1.marginalCost(additionalPallets, additionalMilesWithCargo);
-// // Test the conditional acceptatnce of the order
-// if (route1.isOnRouteWithTurf && route1.marginalCostPerOrder <= 0) {
-//     // update route attributes
-//     route1.palletsOccupied += additionalPallets;
-//     route1.milesWithCargo += additionalMilesWithCargo;
-//     route1.routeNumber.push(deliveryPoint);
-//     console.log("Order accepted. Route capacity adjusted.");
-
-// } else {
-//     console.log("Order not accepted.");
-// }
-
-// Calculate and test distances using disntance functions
-// const distancePickUpToRouteStart = distanceCalculatorKM(route1.anchorCoord, order.pickUp);
-// const crossTrackDistance = crossTrackDistanceCalc(order.pickUp, route1.anchorCoord, constants.hubCoordinates);
-// console.log(`Distance from anchor to pick-up: ${distancePickUpToRouteStart} km`);
-// console.log(`Cross-track distance: ${crossTrackDist} km`);
 
 
 /*
 intake order
 edit to take in dropoff point
 determine route
-sufficient time? +30min
-sufficient volume? this.volume <= 26.6; total vol (1700 ft^3) - (pallets * vol[64])
-sufficient weight: 9180 lbs max; weight = total weight - (pallets * weight[440])
-weight of package * 66lbs
+X sufficient time? +30min
+X sufficient volume? this.volume <= 26.6; total vol (1700 ft^3) - (pallets * vol[64])
+X sufficient weight: 9180 lbs max; weight = total weight - (pallets * weight[440])
+
 determine price
 does it fit on current truck, if not reject
 

@@ -79,7 +79,17 @@ class Route {
         this.orderOnRoute = false;
     }
     
+    // CBM (vol.), weight (pounds), type
+// // const order2 = {
+//     1,"[12, 42, standard]",
+//     "{lat: 33.78015129657219,lng: -84.34128279641483}",
+//     "{lat: 33.662866638790945,lng: -84.26739402810634}"
+// }
+// sufficient volume? this.volume <= 26.6; total vol (1700 ft^3) - (pallets * vol[64])
 
+// need volume to pallet; 
+// max volume = 1700;
+// current volume
     
 
     updateOrder(order) {
@@ -246,6 +256,7 @@ routeToUpdate.updateOrder(transformedOrder);
 console.log("243R2Up: ", routeToUpdate);
 
 // determine if enough weight capacity
+// sufficient weight: 9180 lbs max; weight = total weight - (pallets * weight[440])
 
 
 
