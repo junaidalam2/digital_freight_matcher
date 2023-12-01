@@ -12,6 +12,7 @@ const palletVolume = 64 // cubic feet
 
 const maxWeight = 9180 // lbs
 const truckVolume = 1700 // cubic feet
+const maxTime = 10 // hours
 
 const truckPalletsMax = truckVolume / palletVolume
 const palletCostPerMile = costPerMile / truckPalletsMax

@@ -190,18 +190,7 @@ module.exports = {
       
 }
 
-/*
-//34.9161210050057, -85.1103924702221
 
-route1.proposedOrderPickUpCoord = {'latitude': 34.9161210050057, 'longitude': -85.1103924702221 }; 
-route1.proposedOrderDropOffCoord = {'latitude': 84.3875298776525, 'longitude': 33.7544138157922 }; 
-
-route1.isOnRoute()
-console.log(route1.orderOnRoute)
-*/
-
-// route 1 instance
-// const route1 = routeData[1];
 
 const order = {
     cargo: {
@@ -219,11 +208,11 @@ const order = {
         "longitude": -85.08447506395166
     }
 };
-// const order2 = {
-//     1,"[12, 42, standard]",
-//     "{lat: 33.78015129657219,lng: -84.34128279641483}",
-//     "{lat: 33.662866638790945,lng: -84.26739402810634}"
-// }
+const order2 = {
+    1,"[12, 42, standard]",
+    "{lat: 33.78015129657219,lng: -84.34128279641483}",
+    "{lat: 33.662866638790945,lng: -84.26739402810634}"
+}
 
 const transformedOrder = convertOrderFormat(order);
 let routeToUpdate;
@@ -246,43 +235,48 @@ console.log("242R2Up: ", routeToUpdate);
 routeToUpdate.updateOrder(transformedOrder);
 console.log("243R2Up: ", routeToUpdate);
 
-// determine if enough weight capacity
-// CBM (vol.), weight (pounds), type
-
-// // const order2 = {
-//     1,"[12, 42, standard]",
-//     "{lat: 33.78015129657219,lng: -84.34128279641483}",
-//     "{lat: 33.662866638790945,lng: -84.26739402810634}"
-// }
-
-// sufficient volume? this.volume <= 26.6; total vol (1700 ft^3) - (pallets * vol[64])
-// package volume = this.volume 
-
-// need volume to pallet; 
-// max volume = 1700;
-// current volume
-// this.volume = 
 
 
-// CHECK FOR VOLUME; boolean
-// if current volume + this.volume <= 1700, meets_Volume = true
-
-// sufficient weight: 9180 lbs max; weight = total weight - (pallets * weight[440])
+// CHECK FOR VOLUME; 
+function meets_Volume(order) {
+    orderVolume = order[0][0];
+    console.log("260OrderVolume: ", orderVolume);
+    if (maxVolume <= currentVolume + orderVolume) {
+        return true;
+    } else {
+        return false;
+    }
+}
 // CHECK FOR WEIGHT; boolean
-// max weight
-// current weight
-// this.weight
-// current weight + this.weight <= 9180
+function meets_Weight(order) {
+    orderWeight = order[0][1];
+    console.log("260OrderWeight: ", orderWeight);
+    if (maxWeight <= currentWeight + orderWeight) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 // CHECK FOR TIME; boolean
-// this.time = 30 (rounded; if km < 1 time is negligible)
-// time for route
-// max time = 10 hours
-// total time + 30 <= time max
+function meets_Time(order) {
+    orderTime = 0.66;
+    console.log("260OrderTime: ", orderTime);
+    if (maxTime <= currentTime + orderTime) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
-
-
-
+// If meets volume, weight and time constraints, update the route
+if (meets_Volume && meets_Weight && meets_Time) {
+    routeToUpdate.updateOrder(transformedOrder);
+    console.log("275R2Up: ", routeToUpdate);    
+    // update price
+} else {
+    console.log("Order rejected")
+}
 /*
 intake order
 edit to take in dropoff point
@@ -298,6 +292,10 @@ clone; done
 create a branch
 push to branch
 branch, save on it
+
+database starting values:
+route starting vals
+Pallets
 
 
 */
