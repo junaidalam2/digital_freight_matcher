@@ -1,10 +1,5 @@
-
 const constants = require('./constants.js');
-const distance = require('./distance.js');
-const geodesic = require("geographiclib-geodesic"); // https://geographiclib.sourceforge.io/html/js/
-const DMS = require("geographiclib-dms");
-const geod = geodesic.Geodesic.WGS84;
-// https://stackoverflow.com/questions/20231258/minimum-distance-between-a-point-and-a-line-in-latitude-longitude?noredirect=1&lq=1
+
 
 class Route {
 
@@ -45,37 +40,6 @@ class Route {
     resetMarginalCost() {
         this.marginalCostPerOrder = null
     }
-
-    /*
-    distanceCalculatorKM(point1Hash, point2Hash) {
-
-        const distanceInKM = geod.Inverse(point1Hash['latitude'], point1Hash['longitude'], point2Hash['latitude'], point2Hash['longitude']).s12 / 1000;  // dividing by 1000 to convert to kilometres
-    
-        return distanceInKM;
-    }
-    
-    obtainBearing(latitudePoint1, latitudePoint2, longitudePoint1, longitudePoint2) {
-    
-        const x = Math.sin(longitudePoint2 - longitudePoint1) * Math.cos(latitudePoint2)
-        const y = Math.cos(latitudePoint1) * Math.sin(latitudePoint2) - Math.sin(latitudePoint1) * Math.cos(latitudePoint2) * Math.cos(longitudePoint2 - longitudePoint1)
-    
-        const bearingInRadians = Math.atan2(x, y);
-        const bearingInDegrees = ( bearingInRadians * 180 / Math.PI + 360) % 360; 
-        
-        return bearingInDegrees;
-    }
-    
-    crossTrackDistanceCalc(orderCoordinates, routeStartCoordinates, routeEndCoordinates) {
-    
-        const distancePickUpToRouteStart = this.distanceCalculatorKM(routeStartCoordinates, orderCoordinates);
-    
-        const bearing1 = this.obtainBearing(routeStartCoordinates['latitude'], routeStartCoordinates['longitude'], orderCoordinates['latitude'], orderCoordinates['longitude']);
-        const bearing2 = this.obtainBearing(routeStartCoordinates['latitude'], routeStartCoordinates['longitude'], routeEndCoordinates['latitude'], routeEndCoordinates['longitude']);
-    
-        const crossTrackDistance = Math.asin( Math.sin( distancePickUpToRouteStart / 6371) * Math.sin((bearing1 - bearing2) * (Math.PI / 180))) * 6371; // kilometres
-    
-        return crossTrackDistance;
-    }*/
 
     toRadians(degrees) {
         return degrees * (Math.PI / 180);
@@ -149,12 +113,6 @@ class Route {
           );
 
         console.log(this.proposedDropOffDistanceToRoute)
-
-        //const distanceInKM = geod.Inverse(point1Hash['latitude'], point1Hash['longitude'], point2Hash['latitude'], point2Hash['longitude']).s12 / 1000;  // dividing by 1000 to convert to kilometres
-
-
-        //this.proposedPickUpDistanceToRoute = this.crossTrackDistanceCalc(this.proposedOrderPickUpCoord, this.anchorCoord, constants.hubCoordinates)
-        //this.proposedDropOffDistanceToRoute = this.crossTrackDistanceCalc(this.proposedOrderDropOffCoord, this.anchorCoord, constants.hubCoordinates)
 
         if(Math.abs(this.proposedPickUpDistanceToRoute) <= 1 && Math.abs(this.proposedDropOffDistanceToRoute) <= 1) {
             this.orderOnRoute = true;
