@@ -1,83 +1,50 @@
-# Engineering Lab 1 - Digital Freight Matching
+# Welcome to Data Freight Matching
+******************************************
 
-# Problem Statement
-<p>Infinity and Beyond, a family-owned trucking enterprise based in Atlanta, GA, recently landed a significant contract with the Too-Big-To-Fail company. This substantial collaboration led them to acquire five new trucks and establish expansive routes spanning the entirety of the state. Despite having fixed rates determined by the volume of cargo transported, the company faces challenges. The mounting pressures of inflation and decreased contracted cargo have caused them to feel the financial pinch on some of these routes.</p>
-<p>The dilemma deepens when considering their binding four-year contract that prevents them from canceling any existing routes. This contractual commitment, coupled with the specialized trucks they've already invested in for the project, has placed them in a tight spot. The repercussions of prematurely terminating the contract would involve hefty fines, and the ongoing maintenance of the trucks only adds to their predicament.</p>
-<p>In search of a solution, the owners of Infinity and Beyond, Mr. and Miss. Lightyear stumbled upon news about Digital Freight Matching (DFM). Investing their weekend into comprehending this concept, they began to see it as a potential lifeline for their company's current challenges.</p>
+## Task
 
-# Solution
+Build Data Freight Matching service that allows offering cargo space in the current fixed routes to clients seeking transportation along those paths. The service will process orders in a specific format used in the existing control system and match them to preexisting routes based on defined criteria:
 
-<p>Build a Pricing and Scheduling Service that allows Mr. and Miss. Lightyear to offer cargo space in the current fixed routes, to clients that want to transport through those same paths. The service will receive orders in a specific format (used in their current control system), and will try to match any existing route, based on the following criteria:</p>
+    - Pick up and drop off locations within a maximum distance of 1 km from any point inside existing routes.
+    - Cargo must fill the truck's compartment, considering the original cargo and any additional items.
+    - Each pick up and drop off requires 15 minutes, plus deviation from the route up to 1 km.
+    - Costs per mile provided through an updated spreadsheet.
+    - Unfilled cargo can be combined with other clients' cargo to create new profitable routes.
+    - Routes must return to the point of origin and must not exceed 10 hours/day.
+    - Consideration of cargo types that cannot be transported together.
+    - Adherence to union regulations requiring a 30-minute break for truck drivers after 4 hours of work.
+    
+## Description
+The problem was addressed by creating a Digital Freight Matching (DFM) system with the following functionality:
 
-- Pick up and drop off locations must be at most  at a distance of 1 km of any point inside any preexisting routes.
-- Cargo (set of packages) must fill in the truck's compartment (taking into account the original cargo, and all cargo being included on it).
-- Every pick up and drop off takes 15 minutes, plus deviation from the route (up to 1km from any preexisting point).
-- All costs per mile involved are given by a spreadsheet that's updated by Mr. Lightyear.
-- Cargo that can't fit on any route, can be saved and combined with other clients' cargo, to form a new route. New routes MUST be profitable.
-- Routes must go back to the point of origin, and can't last longer than 10 hours/day.
+    - Matching orders based on proximity, cargo volume, time constraints, and cost per mile.
+    - Consolidating residual cargo into new routes to maintain profitability.
+    - Consideration of union regulations, cargo types, time limitations, and specific route parameters.
 
-**BONUS**:
-- Includes cargo type: Some types can't be transported together;
-- Union: Truck drivers must take a 30 minute break after 4 hours of work.
+The solution utilized SQLite for efficient database management and Node.js and JavaScript for developing the system's core functionalities.
 
-# Overall Architecture
+## Installation
+//CHECK THIS PART
 
-![architecture](/assets/architecture.png)
+- Clone the repository from [GitHub Repo Link].
+- Navigate to the project directory.
+- Install necessary dependencies using Node.js package manager.
 
-### Order format (received by the Service)
+## Usage
+To use it pass the order info to the program using the following format:
 
-```	
-{
-	cargo: {
-		    "packages": [1, 60, 'standard'] // CBM (vol.), weight (pounds), type
-    },
-	pick-up: {
-		    "latitude": 33.754413815792205, 
-		    "longitude": -84.3875298776525
-    },
-    drop-off: {
-		    "latitude": 34.87433824316913, 
-		    "longitude": -85.08447506395166
-    }
-}
-```
+"CBM (vol.), weight (pounds), type","{pick up latitude:, pick up longitude:}", "{drop off latitude:, drop off longitude:}"
 
-### Route format
+"[1, 75, medicine]","{lat: 33.7410939584213,lng: -84.39448926258176}","{lat: 33.82780631623736,lng: -84.35306760483363}"
+
+The system then will check if the orders can be completed within the established parameters and, if successful, add them to the routes or reject if not. You can obtain a summary of the completed orders for the day. //CHECK LAST SENTANCE
 
 ```
-route: [
-	{
-        "latitude": 33.754413815792205, 
-		"longitude": -84.3875298776525    // <- Starting Point
-    },
-    {
-	    "latitude": 34.87433823445323, 
-		"longitude": -85.084123334995166
-    },
-    {
-	    "latitude": 34.87433823445323, 
-		"longitude": -85.084123334995166
-    },
-    {
-	    "latitude": 34.87433824316913, 
-		"longitude": -85.08447506395166
-    },
-	{
-        "latitude": 33.754413815792205, 
-		"longitude": -84.3875298776525 // <- Last Point
-    }
-]
+./my_dfm argument1 argument2 //TO BE COMPLETED
 ```
 
-### Current Routes
+### The Core Team
+Project completed by Anthea Ip, Junaid Alam and Nikita Gaidamachenko.
 
-![routes](/assets/existing_routes.png)
-
-
-# References
-- <a href="https://convoy.com/digital-freight-network/">Digital Freight Network</a>
-- <a href="https://www.freightcourse.com/digital-freight-matching/">DFM - Digital Freight Matching</a>
-- <a href="https://www.inboundlogistics.com/articles/deadhead-trucking/#:~:text=Deadhead%20trucking%20is%20when%20a,and%20how%20to%20minimize%20it">Deadhead Trucking.</a>
-- <a href="https://www.truckinfo.net/research/trucking-statistics">Trucking Trends</a>
-
-<span><i>Made at <a href='https://qwasar.io'>Qwasar Silicon Valley</a></i></span> <span><img alt='Qwasar Silicon Valley Logo' src='https://storage.googleapis.com/qwasar-public/qwasar-logo_50x50.png' width='20px'></span>
+<span><i>Made at <a href='https://qwasar.io'>Qwasar SV -- Software Engineering School</a></i></span>
+<span><img alt='Qwasar SV -- Software Engineering School's Logo' src='https://storage.googleapis.com/qwasar-public/qwasar-logo_50x50.png' width='20px'></span>
