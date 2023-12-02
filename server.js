@@ -1,6 +1,14 @@
 
 const constants = require('./constants.js');
-const constants = require('./startInputs.js');
+const routes = require('./routes.js');
+const dbServer = require('./server_db.js');
+
+
+// handle uncaught exceptions
+
+
+
+
 
 /*
 

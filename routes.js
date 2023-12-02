@@ -3,7 +3,7 @@ const constants = require('./constants.js');
 
 class Route {
 
-    constructor(routeNumber, anchorPointName, milesWithCargo, palletsOccupied, pickUpDropOffCounter, longitude, latitude) {
+    constructor(routeNumber, anchorPointName, milesWithCargo, palletsOccupied, pickUpDropOffCounter, longitude, latitude, dbTableName) {
 
         this.routeNumber = routeNumber;
         this.anchorPointName = anchorPointName;
@@ -29,6 +29,7 @@ class Route {
         this.proposedPickUpDistanceToRoute = null;
         this.proposedDropOffDistanceToRoute = null;
         this.orderOnRoute = false;
+        this.dbTableName = dbTableName;
 
     }
 
@@ -124,11 +125,11 @@ class Route {
 }
 
 
-const route1 = new Route(1, 'Ringgold', 101, 12, 2, 34.9161210050057, -85.1103924702221)
-const route2 = new Route(2, 'Augusta', 94.6, 10, 2, 33.4676716195606, -81.8920767938344)
-const route3 = new Route(3, 'Savannah', 248, 11, 2, 32.0815296895872, -80.9773396382228)
-const route4 = new Route(4, 'Albany', 182, 12, 2, 31.5770410650746, -84.1807668794164)
-const route5 = new Route(5, 'Columbus', 107, 9, 2, 32.4661710120819, -85.1587927831466)
+const route1 = new Route(1, 'Ringgold', 101, 12, 2, 34.9161210050057, -85.1103924702221, "route1")
+const route2 = new Route(2, 'Augusta', 94.6, 10, 2, 33.4676716195606, -81.8920767938344, "route2")
+const route3 = new Route(3, 'Savannah', 248, 11, 2, 32.0815296895872, -80.9773396382228, "route3")
+const route4 = new Route(4, 'Albany', 182, 12, 2, 31.5770410650746, -84.1807668794164, "route4")
+const route5 = new Route(5, 'Columbus', 107, 9, 2, 32.4661710120819, -85.1587927831466, "route5")
 
 
 const routeData = {

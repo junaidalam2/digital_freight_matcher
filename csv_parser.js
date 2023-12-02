@@ -1,6 +1,29 @@
 const fs = require('fs');
 const csv = require('csv-parser');
+const routes = require('./routes.js');
 const dbServerSqlite = require('./server_db.js');
+
+
+
+function allocateToRouteDb(order) {
+
+  Object.keys(routes.routeData).forEach(function (key) { 
+    const routeClassInstance = routes.routeData[key]
+    
+    routeClassInstance.proposedOrderPickUpCoord = {'latitude': order[4], 'longitude': order[5] };
+    routeClassInstance.proposedOrderDropOffCoord = {'latitude': order[6], 'longitude': order[7] };
+    
+    if(routeClassInstance.isOnRoute()) {
+      dbServerSqlite.dbCreateRecord(order, routeClassInstance.dbTableName);
+      dbServerSqlite.dbSelectLastRecord(routeClassInstance.dbTableName)
+      return;
+    }
+  })
+}
+
+
+
+
 
 fs.createReadStream('full_orders.csv')
   .pipe(csv())
@@ -27,8 +50,9 @@ fs.createReadStream('full_orders.csv')
     ];
 
     //console.log(order)
-    dbServerSqlite.dbCreateRecord(order)
-    dbServerSqlite.dbSelectLastRecord()
+    //dbServerSqlite.dbCreateRecord(order)
+    allocateToRouteDb(order)
+    
 
   })
   .on('end', () => {
