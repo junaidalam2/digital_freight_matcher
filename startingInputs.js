@@ -88,25 +88,26 @@ db.serialize(() => {
     }
 });
 
+
 // move to another file
-function degreesToRadians(degrees) {
-    return degrees * (Math.PI / 180);
-}
-// move to another file
-function calculateDistanceBetweenPoints(point1, point2) {
+function calculateDistanceBetweenPoints(lat1, lon1, lat2, lon2) {
     const earthRadiusKm = 6371; // Earth radius in km
+    const degreesToRadians = (degrees) => {
+        return degrees * (Math.PI / 180);
+    };
 
-    const lat1 = degreesToRadians(point1.latitude);
-    const lon1 = degreesToRadians(point1.longitude);
-    const lat2 = degreesToRadians(point2.latitude);
-    const lon2 = degreesToRadians(point2.longitude);
+    const radLat1 = degreesToRadians(lat1);
+    const radLon1 = degreesToRadians(lon1);
+    const radLat2 = degreesToRadians(lat2);
+    const radLon2 = degreesToRadians(lon2);
 
-    const dLat = lat2 - lat1;
-    const dLon = lon2 - lon1;
+    const dLat = radLat2 - radLat1;
+    const dLon = radLon2 - radLon1;
 
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon /2 ) * Math.sin(dLon / 2);
     const c = Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = earthRadiusKm * c; // distance in km
+    console.log("113dist: ", distance);
     return distance;
 }
 
@@ -116,10 +117,10 @@ function convertOrderFormat(order) {
     // console.log("35: order.pickUp.longitude: ", order['pick-up'].longitude);
     // console.log("36: order.pickUp.latitude: ", order['drop-off'].latitude);
     // console.log("37: order.pickUp.longitude: ", order['drop-off'].longitude);
-    const milesWithCargo = distanceCalculatorKM(order['pick-up'].latitude, order['pick-up'].longitude, order['drop-off'].latitude, order['drop-off'].longitude); // calc miles with cargo
+    const milesWithCargo = calculateDistanceBetweenPoints(order['pick-up'].latitude, order['pick-up'].longitude, order['drop-off'].latitude, order['drop-off'].longitude); // calc miles with cargo
     const palletsOccupied = order.cargo.packages.length; // calc pallets occupied
     const pickUpDropOffCounter = 2; // calc pick up / drop off counter
-    // console.log("41: milesWithCargo: ", milesWithCargo);
+    console.log("126: milesWithCargo: ", milesWithCargo);
     // console.log("42: palletsOccupied: ", palletsOccupied);
     // console.log("43: pickUpDropOffCounter: ", pickUpDropOffCounter);
     return {
@@ -164,12 +165,22 @@ class Route {
     
 
     updateOrder(order) {
-        this.milesWithCargo = order.milesWithCargo;
+        this.milesWithCargo = order.milesWithCargo; // fix the calculation
         this.palletsOccupied = order.palletsOccupied; // check if i need to add to the current pallets Occ
         this.pickUpDropOffCounter = order.pickUpDropOffCounter;
         // Adjust volume and weight for partial pallets
         this.availableVolume = constants.truckVolume - this.palletsOccupied * constants.palletVolume;
         this.availableWeight = constants.maxWeight - this.palletsOccupied * constants.palletWeight;
+        const updateQuery = `UPDATE Routes
+                            SET MilesWithCarg = ?, Pallets = ?, TimeHours = ?
+                            WHERE RouteNum = ?`;
+        db.run(updateQuery, [this.milesWithCargo, this.palletsOccupied, this.timeInMinutes/60, this.routeNumber], function(err) {
+            if(err) {
+                console.log("179ErrorUpdRoute: ", err);
+            } else {
+                console.log("181 Route updated");
+            }
+        });
     }
 
     checkConstraints() {
@@ -180,15 +191,6 @@ class Route {
         return timeConstraint && volumeConstraint && weightConstraint;
     }
 
-    rejectOrder() {
-        // Restore vars to previous vals
-        // Subtracted out the order vals
-        this.milesWithCargo -= order.milesWithCargo;
-        this.palletsOccupied -= order.palletsOccupied;
-        this.pickUpDropOffCounter -= order.pickUpDropOffCounter;
-        this.availableVolume = constants.truckVolume - this.palletsOccupied * constants.palletVolume;
-        this.availableWeight = constants.maxWeight - this.palletsOccupied * constants.palletWeight;
-    }
 
     marginalCost(additionalPallets, additionalMilesWithCargo) {
         this.marginalCostPerOrder = additionalPallets * this.totalMiles * constants.palletCostPerMile;

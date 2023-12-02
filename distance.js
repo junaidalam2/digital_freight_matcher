@@ -4,6 +4,7 @@ const geodesic = require("geographiclib-geodesic"); // https://geographiclib.sou
 const DMS = require("geographiclib-dms");
 const geod = geodesic.Geodesic.WGS84;
 
+
 const routeEndCoordinates = { 'latitude': 50.5, 'longitude': 80.5}
 const routeStartCoordinates = { 'latitude': 40.5, 'longitude': 60.5}
 const pickUpCoordinates = { 'latitude': 51.0, 'longitude': 69.0}
@@ -11,7 +12,7 @@ const pickUpCoordinates = { 'latitude': 51.0, 'longitude': 69.0}
 function distanceCalculatorKM(point1Hash, point2Hash) {
 
     const distanceInKM = geod.Inverse(point1Hash['latitude'], point1Hash['longitude'], point2Hash['latitude'], point2Hash['longitude']).s12 / 1000;  // dividing by 1000 to convert to kilometres
-
+    console.log("Dist14: ", distanceInKM);
     return distanceInKM;
 }
 
