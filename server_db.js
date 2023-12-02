@@ -89,24 +89,42 @@ function dbSelectAll(table) {
 }
 
 
-function dbSelectAllRanked(table, OrderByColumn, OrderDirection) {
-    const db = dbConnect();
-
-
-        const sql = `SELECT * FROM ${table} ORDER BY ${OrderByColumn} ${OrderDirection}`;
-              
-        db.all(sql, (err, rows) => {
+function executeQuery(query) {
+    return new Promise((resolve, reject) => {
+        const db = dbConnect();
+        
+        db.all(query, [], (err, rows) => {
             if (err) {
-                console.error(err.message);
+                reject(err);
             } else {
-                console.log(rows);
+                resolve(rows);
             }
-        });
 
-        // db.close(); // You might want to close the database connection after the query is executed.
-    return rows
+            db.close();
+        });
+    });
 }
 
+
+
+
+// Example usage
+
+async function dbSelectAllRanked(table, wherecolumn, whereCondition, orderByColumn, orderDirection) {
+    
+    try {
+
+        const sql = `SELECT * FROM ${table} WHERE ${wherecolumn} = ${whereCondition} ORDER BY ${orderByColumn} ${orderDirection}`;
+        return await executeQuery(sql);
+        //console.log(rows);
+        // rows;
+
+    } catch (error) {
+        console.error(error);
+    }
+    
+    
+};
 
 
 

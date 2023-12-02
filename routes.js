@@ -155,14 +155,14 @@ module.exports = {
 //route1.proposedOrderPickUpCoord = {'latitude': 34.9161210050057, 'longitude': -85.1103924702221 }; 
 //route1.proposedOrderDropOffCoord = {'latitude': 34.9161210050057, 'longitude': -85.1103924702221 }; 
 
-route1.proposedOrderPickUpCoord = {'latitude': 33.7544138157922, 'longitude': -84.3875298776525 }; 
-route1.proposedOrderDropOffCoord = {'latitude': 34.9161210050057, 'longitude': -85.1103924702221 }; 
+//route1.proposedOrderPickUpCoord = {'latitude': 33.7544138157922, 'longitude': -84.3875298776525 }; 
+//route1.proposedOrderDropOffCoord = {'latitude': 34.9161210050057, 'longitude': -85.1103924702221 }; 
 
 //console.log(route1.proposedOrderPickUpCoord)
 //console.log(route1.proposedOrderDropOffCoord)
 
 //console.log(route1.routeNumber)
 
-route1.isOnRoute()
-console.log(route1.orderOnRoute)
+//route1.isOnRoute()
+//console.log(route1.orderOnRoute)
 

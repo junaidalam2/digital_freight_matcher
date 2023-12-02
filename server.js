@@ -83,7 +83,7 @@ function haversine(lat1, lon1, lat2, lon2) {
         order.push(distanceOnRoute);
         order.push(directionToAnchor);
   
-        console.log(order, order.length)
+        console.log(order)
   
         dbServerSqlite.dbCreateRecord(order, routeClassInstance.dbTableName);
         
@@ -135,7 +135,7 @@ function runParser() {
 
         })
         .on('end', () => {
-        console.log('CSV data has been transformed to a JavaScript object:');
+        console.log('CSV data has been transformed to a JavaScript array:');
         })
         .on('error', (error) => {
         console.error('Error reading the CSV file:', error.message);
@@ -144,7 +144,17 @@ function runParser() {
 }
   
 
-runParser();
+
+let rowsAll
+
+dbServerSqlite.dbSelectAllRanked("orders_route1", "direction_to_anchor", "true", "distance_on_route", "DESC")
+    .then(rows => {
+        rowsAll = rows;
+        console.log(rows);
+    })
+    .catch(error => {
+        console.error(error);
+    });
 
 /*
 
