@@ -19,4 +19,4 @@ function removeAllTables() {
 
 }
 
-//removeAllTables();
+removeAllTables();

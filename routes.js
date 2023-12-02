@@ -102,7 +102,7 @@ class Route {
             constants.hubCoordinates['longitude'],
           );
 
-        console.log(this.proposedPickUpDistanceToRoute)
+        //console.log(this.proposedPickUpDistanceToRoute)
 
         this.proposedDropOffDistanceToRoute = this.crossTrackDistance(
             this.proposedOrderDropOffCoord['latitude'],
@@ -113,7 +113,7 @@ class Route {
             constants.hubCoordinates['longitude'],
           );
 
-        console.log(this.proposedDropOffDistanceToRoute)
+        //console.log(this.proposedDropOffDistanceToRoute)
 
         if(Math.abs(this.proposedPickUpDistanceToRoute) <= 1 && Math.abs(this.proposedDropOffDistanceToRoute) <= 1) {
             this.orderOnRoute = true;
