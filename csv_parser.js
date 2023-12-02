@@ -12,8 +12,10 @@ function allocateToRouteDb(order) {
     
     routeClassInstance.proposedOrderPickUpCoord = {'latitude': order[4], 'longitude': order[5] };
     routeClassInstance.proposedOrderDropOffCoord = {'latitude': order[6], 'longitude': order[7] };
-    
-    if(routeClassInstance.isOnRoute()) {
+    routeClassInstance.isOnRoute()
+
+    if(routeClassInstance.orderOnRoute) {
+      console.log(routeClassInstance.orderOnRoute);
       dbServerSqlite.dbCreateRecord(order, routeClassInstance.dbTableName);
       dbServerSqlite.dbSelectLastRecord(routeClassInstance.dbTableName)
       return;
@@ -51,7 +53,7 @@ fs.createReadStream('full_orders.csv')
 
     //console.log(order)
     //dbServerSqlite.dbCreateRecord(order)
-    allocateToRouteDb(order)
+    allocateToRouteDb(order);
     
 
   })

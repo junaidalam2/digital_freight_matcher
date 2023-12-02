@@ -48,22 +48,58 @@ function dbSelectLastRecord(table) {
 
     const db = dbConnect();
 
-    return new Promise((resolve, reject) => {
-
         const sql = `SELECT MAX(id) AS id FROM ${table}`;
          db.get(sql, (err, id) => {
             if (err) return reject(console.error(err.message));
             console.log(id);
-            return resolve(id);
         });
         //db.close();
-    });
 }
+
+
+function dbSelectAll(table) {
+    const db = dbConnect();
+
+
+        const sql = `SELECT * FROM ${table}`;
+        
+        db.all(sql, (err, rows) => {
+            if (err) {
+                console.error(err.message);
+            } else {
+                console.log(rows);
+            }
+        });
+
+        // db.close(); // You might want to close the database connection after the query is executed.
+    
+}
+
+
+function dropTable(table) {
+    const db = dbConnect();
+
+        const sql = `DROP TABLE IF EXISTS ${table}`;
+        
+        db.all(sql, (err, rows) => {
+            if (err) {
+                console.error(err.message);
+            } else {
+                console.log(`Table: ${table} dropped`);
+            }
+        });
+
+        // db.close(); // You might want to close the database connection after the query is executed.
+    
+}
+
 
 
 module.exports = {
 
     dbCreateRecord,
     dbSelectLastRecord,
+    dbSelectAll,
+    dropTable,
 
 };
