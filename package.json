@@ -8,5 +8,11 @@
     "start": "node server.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@turf/turf": "^6.5.0",
+    "geographiclib-dms": "^2.0.0",
+    "geographiclib-geodesic": "^2.0.0",
+    "sqlite3": "^5.1.6"
+  }
 }

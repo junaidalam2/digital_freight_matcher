@@ -8,6 +8,86 @@ const DMS = require("geographiclib-dms");
 const geod = geodesic.Geodesic.WGS84;
 // https://stackoverflow.com/questions/20231258/minimum-distance-between-a-point-and-a-line-in-latitude-longitude?noredirect=1&lq=1
 
+// Create and populate database
+const sqlite3 = require('sqlite3').verbose();
+// Connect to db
+const db = new sqlite3.Database('routes.db');
+// Create a table for routes
+db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS Routes (
+        RouteNum INTEGER PRIMARY KEY,
+        AnchorPoint TEXT,
+        MilesWithCargo REAL,
+        TotalMiles REAL,
+        OperationalTruckCost REAL,
+        Pallets INTEGER,
+        CargoCost REAL,
+        EmptyCargoCost REAL,
+        Markup REAL,
+        PriceBasedOnTotalCost REAL,
+        PriceBasedOnCargoCost REAL,
+        Margin REAL,
+        PickupDropOffQuantity INTEGER,
+        TimeHours REAL     
+        )`, function(err) {
+            if(err) {
+                console.error("34: ", err.message);
+                writeToErrorLog(err.message);
+                sendAlertToAdmin(err);         
+            } else {
+            performAdditionalDatabaseActions();
+            }
+        });
+
+    function performAdditionalDatabaseActions() {
+
+        // Insert values for routes
+        const routesData = [
+            [1, 'Ringgold', 101, 202, 367.02, 12, 165.80599, 201.21, 0.5, 550.53, 248.708981, -0.3224, 2, 4.0],
+            [2, 'Augusta', 94.6, 189.2, 343.76, 10, 129.41622, 214.35, 0.5, 515.64, 194.1243367, -0.4353, 2, 3.8],
+            [3, 'Savannah', 248, 496, 901.19, 11, 373.20028, 527.99, 0.5, 1351.79, 559.8004127, -0.3788, 2, 9.9],
+            [4, 'Albany', 182, 364, 661.36, 12, 298.77911, 362.58, 0.5, 992.04, 448.1686588, -0.3224, 2, 7.3],
+            [5, 'Columbus', 107, 214, 388.82, 9, 131.74189, 257.08, 0.5, 583.23, 197.612829, -0.4918, 2, 4.3],
+        ];
+  
+    // Prepare the SQL INSERT statement
+        const insertRoute = db.prepare(`INSERT INTO Routes (
+        RouteNum,AnchorPoint,MilesWithCargo,TotalMiles,OperationalTruckCost, Pallets,CargoCost,
+        EmptyCargoCost, Markup,PriceBasedOnTotalCost,PriceBasedOnCargoCost,Margin,PickupDropOffQuantity,TimeHours) 
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)` );
+
+        // Insert values for each route
+        routesData.forEach(data => {
+            insertRoute.run(...data, function(err) {
+                if (err) {
+                    console.log("62foreach", err.message);
+                }
+            });
+        });
+
+        // Finalize the prepared statement
+        insertRoute.finalize();
+
+        // Fetch and log all routes
+        db.each("SELECT * FROM Routes", (err, row) => {
+            if(err) {
+                console.log("75dbEach", err.message);
+            } else {
+                console.log("77row", row);
+            }
+        });
+
+        // Close the db connection
+        db.close((err) => {
+            if(err) {
+                console.log("84dbclose: ", err.message);
+            } else {
+                console.log("86Database connection closed");
+            }
+        });
+    }
+});
+
 // move to another file
 function degreesToRadians(degrees) {
     return degrees * (Math.PI / 180);
@@ -208,11 +288,11 @@ const order = {
         "longitude": -85.08447506395166
     }
 };
-const order2 = {
-    1,"[12, 42, standard]",
-    "{lat: 33.78015129657219,lng: -84.34128279641483}",
-    "{lat: 33.662866638790945,lng: -84.26739402810634}"
-}
+// const order2 = {
+//     1,"[12, 42, standard]",
+//     "{lat: 33.78015129657219,lng: -84.34128279641483}",
+//     "{lat: 33.662866638790945,lng: -84.26739402810634}"
+// }
 
 const transformedOrder = convertOrderFormat(order);
 let routeToUpdate;
@@ -288,14 +368,31 @@ X sufficient weight: 9180 lbs max; weight = total weight - (pallets * weight[440
 determine price
 does it fit on current truck, if not reject
 
+
 clone; done
 create a branch
 push to branch
 branch, save on it
 
 database starting values:
-route starting vals
+route starting vals; per route:
+RouteNum
+Anchor Point
+miles with cargo
+total miles = 2* miles with cargo
+Operational truck cost
 Pallets
+Cargo Cost
+Empty Cargo Cost
+Markup
+Price (based on total cost)
+price based on cargo cost
+margin
+picup/dropoff quantity
+time (hours)
 
 
+pallets: 26.6 max
+weight max 9180; 9180/26.6 = 345 lbs/pallet
+vol max = 1700; 1700/26.6 = 64 cubft/pallet
 */
