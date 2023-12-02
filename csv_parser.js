@@ -1,13 +1,14 @@
 const fs = require('fs');
 const csv = require('csv-parser');
-const routes = require('./routes.js');
-const constants = require('./constants.js');
-const dbServerSqlite = require('./server_db.js');
+//const routes = require('./routes.js');
+//const constants = require('./constants.js');
+//const dbServerSqlite = require('./server_db.js');
+const server = require('./server.js');
 
 
 
 
-
+/*
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371; // Earth radius in kilometers
 
@@ -99,6 +100,8 @@ function allocateToRouteDb(order) {
   }
 
 }
+*/
+
 
 
 fs.createReadStream('full_orders_truncated.csv')
@@ -127,7 +130,7 @@ fs.createReadStream('full_orders_truncated.csv')
 
     //console.log(order)
     //dbServerSqlite.dbCreateRecord(order)
-    allocateToRouteDb(order);
+    server.allocateToRouteDb(order);
     
 
   })

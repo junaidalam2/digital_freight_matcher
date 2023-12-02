@@ -1,11 +1,11 @@
 const dbServerSqlite = require('./server_db.js');
 
-dbServerSqlite.dbSelectAll("orders_route1");
+//dbServerSqlite.dbSelectAll("orders_route1");
 //dbServerSqlite.dbSelectAll("orders_route2");
 //dbServerSqlite.dbSelectAll("orders_route3");
 //dbServerSqlite.dbSelectAll("orders_route4");
 //dbServerSqlite.dbSelectAll("orders_route5");
-dbServerSqlite.dbSelectAll("orders_rejected")
+//dbServerSqlite.dbSelectAll("orders_rejected")
 
 
 function removeAllTables() {
@@ -20,4 +20,4 @@ function removeAllTables() {
 
 }
 
-//removeAllTables();
+removeAllTables();

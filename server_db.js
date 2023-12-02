@@ -85,8 +85,29 @@ function dbSelectAll(table) {
         });
 
         // db.close(); // You might want to close the database connection after the query is executed.
-    
+    //return rows
 }
+
+
+function dbSelectAllRanked(table, OrderByColumn, OrderDirection) {
+    const db = dbConnect();
+
+
+        const sql = `SELECT * FROM ${table} ORDER BY ${OrderByColumn} ${OrderDirection}`;
+              
+        db.all(sql, (err, rows) => {
+            if (err) {
+                console.error(err.message);
+            } else {
+                console.log(rows);
+            }
+        });
+
+        // db.close(); // You might want to close the database connection after the query is executed.
+    return rows
+}
+
+
 
 
 function dropTable(table) {
@@ -115,5 +136,6 @@ module.exports = {
     dbSelectAll,
     dropTable,
     dbCreateRecordRejectedOrder,
+    dbSelectAllRanked,
 
 };
