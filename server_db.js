@@ -24,6 +24,9 @@ function createTable() {
     db.run(sql_route4);
     const sql_route5 = 'CREATE TABLE IF NOT EXISTS orders_route5 (id INTEGER PRIMARY KEY, order_id, cargo_volume, cargo_weight, cargo_type, pickup_lat, pickup_lon, drop_lat, drop_lon, valid, pickup_intersect_lat, pickup_intersect_lon, drop_intersect_lat, drop_intersect_lon, distance_to_pickup, distance_to_drop, distance_on_route, direction_to_anchor, timestamp, order_accepted)';
     db.run(sql_route5);
+    
+    const sql_rejected = 'CREATE TABLE IF NOT EXISTS orders_rejected (id INTEGER PRIMARY KEY, order_id)';
+    db.run(sql_rejected);
 
     db.close();
 }
@@ -37,6 +40,16 @@ function dbCreateRecord(order_array, table) {
     const currentDate = new Date();
     const timestamp = currentDate.getTime();
     db.run(sql, [...order_array, timestamp, false], (err) => {
+        if (err) return console.error(err.message);
+    });
+    //db.close();
+}
+
+
+function dbCreateRecordRejectedOrder(order_id) {
+    const db = dbConnect();
+    const sql = `INSERT INTO orders_rejected (order_id) VALUES (?)`;
+    db.run(sql, [order_id], (err) => {
         if (err) return console.error(err.message);
     });
     //db.close();
@@ -101,5 +114,6 @@ module.exports = {
     dbSelectLastRecord,
     dbSelectAll,
     dropTable,
+    dbCreateRecordRejectedOrder,
 
 };

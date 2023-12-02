@@ -48,6 +48,8 @@ function intersectionPoint(start, end, point) {
 
 function allocateToRouteDb(order) {
 
+  let orderAllocated = false;
+
   Object.keys(routes.routeData).forEach(function (key) { 
     const routeClassInstance = routes.routeData[key]
     
@@ -86,10 +88,16 @@ function allocateToRouteDb(order) {
       dbServerSqlite.dbCreateRecord(order, routeClassInstance.dbTableName);
       
       order = []
+      orderAllocated = true
       //dbServerSqlite.dbSelectLastRecord(routeClassInstance.dbTableName)
       return;
     }
   })
+
+  if (!orderAllocated) {
+    dbServerSqlite.dbCreateRecordRejectedOrder(order[0]);
+  }
+
 }
 
 
