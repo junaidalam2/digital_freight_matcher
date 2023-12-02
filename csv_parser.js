@@ -81,8 +81,12 @@ function allocateToRouteDb(order) {
       order.push(distanceOnRoute);
       order.push(directionToAnchor);
 
+      console.log(order, order.length)
+
       dbServerSqlite.dbCreateRecord(order, routeClassInstance.dbTableName);
-      dbServerSqlite.dbSelectLastRecord(routeClassInstance.dbTableName)
+      
+      order = []
+      //dbServerSqlite.dbSelectLastRecord(routeClassInstance.dbTableName)
       return;
     }
   })
