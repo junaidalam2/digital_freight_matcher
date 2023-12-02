@@ -10,111 +10,141 @@ const geod = geodesic.Geodesic.WGS84;
 // https://stackoverflow.com/questions/20231258/minimum-distance-between-a-point-and-a-line-in-latitude-longitude?noredirect=1&lq=1
 
 let db;
-function initializeDatabase() {
-    return new Promise((resolve, reject) => {
-    // Create and populate database
-    const sqlite3 = require('sqlite3').verbose();
-    // Connect to db
-    db = new sqlite3.Database('routes.db');
-    // Create a table for routes
-    db.serialize(() => {
-        db.run(`DROP TABLE IF EXISTS Routes`, function(err) {
-            if (err) {
-                console.log(error("19Error dropping table: ", err.message));
-                writeToErrorLog(err.message);
-                sendAlertToAdmin(err);
-            } else {
-                db.run(
-                    `CREATE TABLE IF NOT EXISTS Routes (
-                    EntryID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    RouteNum INTEGER,
-                    AnchorPoint TEXT,
-                    MilesWithCargo REAL,
-                    TotalMiles REAL,
-                    OperationalTruckCost REAL,
-                    Pallets INTEGER,
-                    CargoCost REAL,
-                    EmptyCargoCost REAL,
-                    Markup REAL,
-                    PriceBasedOnTotalCost REAL,
-                    PriceBasedOnCargoCost REAL,
-                    Margin REAL,
-                    PickupDropOffQuantity INTEGER,
-                    TimeHours REAL     
-                )`, function(err) {
-                    if(err) {
-                        console.error("34: ", err.message);
-                        writeToErrorLog(err.message);
-                        sendAlertToAdmin(err);         
+async function initializeDatabase() {
+    return new Promise( (resolve, reject) => {
+        try {
+            const sqlite3 = require('sqlite3').verbose();
+            db = new sqlite3.Database('routes.db');
+
+            async function dropAndCreateRoutesTable(db) {
+                return new Promise((resolve, reject) => {
+                    db.run(`DROP TABLE IF EXISTS Routes`, (err) => {
+                    if (err) {
+                        console.log(error("47Error dropping table: ", err.message));
+                        reject(err);
                     } else {
-                        performAdditionalDatabaseActions();
+                        db.run(
+                            `CREATE TABLE IF NOT EXISTS Routes (
+                            EntryID INTEGER PRIMARY KEY AUTOINCREMENT,
+                            RouteNum INTEGER,
+                            AnchorPoint TEXT,
+                            MilesWithCargo REAL,
+                            TotalMiles REAL,
+                            OperationalTruckCost REAL,
+                            Pallets INTEGER,
+                            CargoCost REAL,
+                            EmptyCargoCost REAL,
+                            Markup REAL,
+                            PriceBasedOnTotalCost REAL,
+                            PriceBasedOnCargoCost REAL,
+                            Margin REAL,
+                            PickupDropOffQuantity INTEGER,
+                            TimeHours REAL     
+                            )`, function(err) {
+                                if(err) {
+                                    console.error("34: ", err.message);
+                
+                                } else {
+                                    console.error("77:No error");
+                                    resolve();
+                                    // performAdditionalDatabaseActions();
+                                }
+                        });
                     }
+                    });   
                 });
             }
-        });   
-    });
-});        
-                    
-    function performAdditionalDatabaseActions() {
+       
+            async function insertRoutesData(db) {
+                const routesData = [
+                    [1, 'Ringgold', 101, 202, 367.02, 12, 165.80599, 201.21, 0.5, 550.53, 248.708981, -0.3224, 2, 4.0],
+                    [2, 'Augusta', 94.6, 189.2, 343.76, 10, 129.41622, 214.35, 0.5, 515.64, 194.1243367, -0.4353, 2, 3.8],
+                    [3, 'Savannah', 248, 496, 901.19, 11, 373.20028, 527.99, 0.5, 1351.79, 559.8004127, -0.3788, 2, 9.9],
+                    [4, 'Albany', 182, 364, 661.36, 12, 298.77911, 362.58, 0.5, 992.04, 448.1686588, -0.3224, 2, 7.3],
+                    [5, 'Columbus', 107, 214, 388.82, 9, 131.74189, 257.08, 0.5, 583.23, 197.612829, -0.4918, 2, 4.3],
+                ];
 
-        // Insert values for routes
-        const routesData = [
-            [1, 'Ringgold', 101, 202, 367.02, 12, 165.80599, 201.21, 0.5, 550.53, 248.708981, -0.3224, 2, 4.0],
-            [2, 'Augusta', 94.6, 189.2, 343.76, 10, 129.41622, 214.35, 0.5, 515.64, 194.1243367, -0.4353, 2, 3.8],
-            [3, 'Savannah', 248, 496, 901.19, 11, 373.20028, 527.99, 0.5, 1351.79, 559.8004127, -0.3788, 2, 9.9],
-            [4, 'Albany', 182, 364, 661.36, 12, 298.77911, 362.58, 0.5, 992.04, 448.1686588, -0.3224, 2, 7.3],
-            [5, 'Columbus', 107, 214, 388.82, 9, 131.74189, 257.08, 0.5, 583.23, 197.612829, -0.4918, 2, 4.3],
-        ];
-    
-    // Prepare the SQL INSERT statement
-        const insertOrUpdateRoute = db.prepare(`INSERT INTO Routes (
-        RouteNum,AnchorPoint,MilesWithCargo,TotalMiles,OperationalTruckCost, Pallets,CargoCost,
-        EmptyCargoCost, Markup,PriceBasedOnTotalCost,PriceBasedOnCargoCost,Margin,PickupDropOffQuantity,TimeHours) 
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)` );
-        
-        // Insert values for each route
-        routesData.forEach(data => {
-            insertOrUpdateRoute.run(...data, function(err) {
-                console.log("63data: ", ...data);
-                if (err) {
-                    console.log("62foreach", err.message);
+                const insertOrUpdateRoute = db.prepare(`INSERT INTO Routes (
+                    RouteNum,AnchorPoint,MilesWithCargo,TotalMiles,OperationalTruckCost, Pallets,CargoCost,
+                    EmptyCargoCost, Markup,PriceBasedOnTotalCost,PriceBasedOnCargoCost,Margin,PickupDropOffQuantity,TimeHours) 
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)` );
+
+                for (const data of routesData) {
+                    await runInsert(db, insertOrUpdateRoute, data);
+                }   
+                insertOrUpdateRoute.finalize();
+            }
+            async function runInsert(db, insertOrUpdateRoute, data) {
+                return new Promise((resolve, reject) => {
+                    insertOrUpdateRoute.run(...data, function(err) {
+                        if (err) {
+                            console.error("81Error inserting data: ", err.message);
+                            reject(err);
+                        } else {
+                            console.log("84Data inserted success: ", data);
+                            resolve();
+                        }
+                    });
+                });
+            }
+
+            async function displayRoutes(db) {
+                return new Promise((resolve, reject) => {
+                    db.all("SELECT * FROM Routes", (err, rows) => {
+                        if (err) {
+                            console.error("116Error fetching routes: ", err.message);
+                            reject(err);
+                        } else {
+                            console.log("98Routes in db: ");
+                            rows.forEach(row => {
+                                console.log(row);
+                            });
+                            resolve();
+                        }
+                    });
+                });
+            }
+
+            async function fetchAndLogRoutes(db) {
+                return new Promise((resolve, reject) => {
+                    db.each("SELECT * FROM Routes", (err, row) => {
+                        if (err) {
+                            console.error("134Error fetching routes:", err.message);
+                            reject(err);
+                        } else {
+                            console.log("137Fetched route:", row);
+                        }
+                    }, () => {
+                        resolve();
+                    });
+                });
+            }
+
+            (async () => {
+                try {
+                    await dropAndCreateRoutesTable(db);
+                    await insertRoutesData(db);
+                    await displayRoutes(db);
+                    await fetchAndLogRoutes(db);
+                    db.close((err) => {
+                        if(err) {
+                            console.log("28dbclose: ", err.message);
+                            reject(err);
+                        } else {
+                            console.log("30Database connection closed");
+                            resolve();
+                        }
+                    });
+                } catch (error) {
+                    console.error("36Error: ", error);
+                    reject(error);
                 }
-            });
-        });
-        
-        // Finalize the prepared statement
-        insertOrUpdateRoute.finalize();
-
-        // Close the db connection
-        db.close((err) => {
-            if(err) {
-                console.log("84dbclose: ", err.message);
-            } else {
-                console.log("86Database connection closed");
-            }
-        });
-
-        // Show the data in the db
-        db.all("SELECT * FROM Routes", (err, rows) => {
-            if (err) {
-                console.error("Error fetching routes:", err.message);
-            } else {
-                console.log("74Routes in the database:");
-                rows.forEach(row => {
-                    console.log(row);
-                });
-            }
-        });
-
-            // Fetch and log all routes
-        db.each("SELECT * FROM Routes", (err, row) => {
-            if(err) {
-                console.log("75dbEach", err.message);
-            } else {
-                console.log("77row", row);
-            }
-        });
-    }
+            })();
+        } catch (error) {
+            console.error("Outer catch block: ", error);
+            reject(error);
+        }
+    });             
 }
 
 
@@ -356,7 +386,7 @@ let routeToUpdate;
 
 
 
-function processOrder(order) {
+function processOrder(order, aw_initDB, aw_procOrd) {
     return new Promise((resolve, reject) => {
         const transformedOrder = convertOrderFormat(order);
         if (meets_Volume && meets_Weight && meets_Time) {
@@ -373,7 +403,8 @@ function processOrder(order) {
 async function startOrderProcessing(order, routeToUpdate) {
     try {
         await initializeDatabase();
-        await processOrder(order, routeToUpdate);
+        
+        let aw_procOrd = await processOrder(order);
         return "Order processed successfully";
     } catch (error) {
         throw new Error (`Order processing failed: ${error}`);
