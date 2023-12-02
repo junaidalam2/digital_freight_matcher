@@ -50,7 +50,7 @@ function dbSelectLastRecord(table) {
 
         const sql = `SELECT MAX(id) AS id FROM ${table}`;
          db.get(sql, (err, id) => {
-            if (err) return reject(console.error(err.message));
+            if (err) return err.message;
             console.log(id);
         });
         //db.close();
