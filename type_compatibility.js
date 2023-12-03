@@ -1,29 +1,30 @@
-//medicine can only be picked up on the way back
-//empty the pallets before coming back
-// CHECK if this.palletsOccupied is referenced correctly
+//palletsOccupied - check for pallets on the truck at the current moment
+//ordersOnTruck - db table [array of[arrays]] of all orders on the truck
 
-function compatibility(shipment1, shipment2) { //take in palletsOccupied too?
+function compatibility(orders, palletsOccupied, ordersOnTruck) {
+    let orderType = orders[0][2]
     const types = {
         "standard": ["standard", "food"],
         "medicine": ["medicine"],
         "food": ["food", "standard"]
     };
-
-    for (let type in types) {
-        if (types.hasOwnProperty(type)) {
-          if (type === "medicine" && this.palletsOccupied === 0 || shipment1 === "medicine" && shipment2 === "medicine"){
-                return true;
-          }
-          if (types[type].includes(shipment1) && types[type].includes(shipment2)) {
-                return true;
+    for (let i = 0; ordersOnTruck.length > i; i++):{
+        for (let type in types) {
+            if (types.hasOwnProperty(type)) {
+                if (orderType === "medicine" && palletsOccupied === 0 || orderType === "medicine" && ordersOnTruck[i][2] === "medicine") {
+                    return true; // medicine can only be picked up on the way back
+                }
+                if (types[type].includes(orderType) && types[type].includes(ordersOnTruck[i][2])) {
+                    return true; 
+                }
             }
         }
+        return false; 
     }
-    return false;
+    
 }
-
-console.log(compatibility("standard", "medicine")); // false
-console.log(compatibility("standard", "food")); // true
-console.log(compatibility("medicine", "food")); // false
-console.log(compatibility("food", "standard")); // tuee
+console.log(compatibility("standard", this.palletsOccupied, ordersOnTruck)); // true
+console.log(compatibility("food", this.palletsOccupied, ordersOnTruck)); // false
+console.log(compatibility("food", this.palletsOccupied, ordersOnTruck)); // true
+console.log(compatibility("medicine", this.palletsOccupied, ordersOnTruck)); // false
 
