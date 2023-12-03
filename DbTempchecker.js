@@ -20,4 +20,13 @@ function removeAllTables() {
 
 }
 
-removeAllTables();
+//removeAllTables();
+
+
+
+dbServerSqlite.dbSelectWithCriteria("orders_route1", "order_id", "seed")
+dbServerSqlite.dbSelectWithCriteria("orders_route2", "order_id", "seed")
+dbServerSqlite.dbSelectWithCriteria("orders_route3", "order_id", "seed")
+dbServerSqlite.dbSelectWithCriteria("orders_route4", "order_id", "seed")
+dbServerSqlite.dbSelectWithCriteria("orders_route5", "order_id", "seed")
+//dbServerSqlite.dbSelectLastRecord("orders_route1")

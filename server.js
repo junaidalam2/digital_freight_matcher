@@ -143,7 +143,52 @@ function runParser() {
 
 }
   
-//runParser()
+
+function seedDbExistingData() {
+
+
+    Object.keys(routes.routeData).forEach(function (key) { 
+
+        const routeClassInstance = routes.routeData[key]
+
+        const distanceToEnd = haversine(routeClassInstance.anchorCoord['latitude'], routeClassInstance.anchorCoord['longitude'], constants.hubCoordinates['latitude'], constants.hubCoordinates['longitude'])
+
+        const order = [
+            'seed',
+            constants.truckVolume - routeClassInstance.availableVolume,
+            constants.maxWeight - routeClassInstance.availableWeight,
+            constants.defaultPackageType,
+            constants.hubCoordinates['latitude'],
+            constants.hubCoordinates['longitude'],
+            routeClassInstance.anchorCoord['latitude'],
+            routeClassInstance.anchorCoord['longitude'],
+            true,
+            constants.hubCoordinates['latitude'],
+            constants.hubCoordinates['longitude'],
+            routeClassInstance.anchorCoord['latitude'],
+            routeClassInstance.anchorCoord['longitude'],
+            0,
+            distanceToEnd,
+            distanceToEnd, //distance on route
+            true,
+        ];
+
+        dbServerSqlite.dbCreateRecord(order, routeClassInstance.dbTableName);
+
+    })
+
+}
+
+
+
+function populateDatabase() {
+    
+    seedDbExistingData();
+    //runParser();
+
+}
+
+populateDatabase()
 
 
 function addPotentialOrdersToRoute(orders, direction_to_anchor) {
@@ -162,7 +207,7 @@ function addPotentialOrdersToRoute(orders, direction_to_anchor) {
 
 
     if(direction_to_anchor) {
-        
+
         //if table empty, add global order
     }
 

@@ -45,7 +45,7 @@ function dbCreateRecord(order_array, table) {
     db.run(sql, [...order_array, timestamp, false], (err) => {
         if (err) return console.error(err.message);
     });
-    //db.close();
+    db.close();
 }
 
 
@@ -69,7 +69,7 @@ function dbSelectLastRecord(table) {
             if (err) return err.message;
             console.log(id);
         });
-        //db.close();
+        db.close();
 }
 
 
@@ -92,11 +92,11 @@ function dbSelectAll(table) {
 }
 
 
-function executeQuery(query) {
+function executeQuery(query, valuesArray = []) {
     return new Promise((resolve, reject) => {
         const db = dbConnect();
         
-        db.all(query, [], (err, rows) => {
+        db.all(query, valuesArray, (err, rows) => {
             if (err) {
                 reject(err);
             } else {
@@ -141,6 +141,22 @@ async function dbSelectAllRanked(table, wherecolumn, whereCondition, orderByColu
     
 };
 
+async function dbSelectWithCriteria(table, wherecolumn, whereCondition) {
+    
+    try {
+
+        const sql = `SELECT * FROM ${table} WHERE ${wherecolumn} = ?`;
+        const rows = await executeQuery(sql, [whereCondition]);
+        console.log(rows);
+        return rows;
+
+    } catch (error) {
+        console.error(error);
+    }
+    
+    
+};
+
 
 
 function dropTable(table) {
@@ -171,5 +187,6 @@ module.exports = {
     dbCreateRecordRejectedOrder,
     dbSelectAllRanked,
     checkIfTableEmpty,
+    dbSelectWithCriteria,
 
 };

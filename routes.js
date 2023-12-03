@@ -3,7 +3,7 @@ const constants = require('./constants.js');
 
 class Route {
 
-    constructor(routeNumber, anchorPointName, milesWithCargo, palletsOccupied, pickUpDropOffCounter, longitude, latitude, dbTableName) {
+    constructor(routeNumber, anchorPointName, milesWithCargo, palletsOccupied, pickUpDropOffCounter, latitude, longitude, dbTableName) {
 
         this.routeNumber = routeNumber;
         this.anchorPointName = anchorPointName;
