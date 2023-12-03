@@ -7,6 +7,7 @@ const geodesic = require("geographiclib-geodesic"); // https://geographiclib.sou
 const DMS = require("geographiclib-dms");
 const { updateLocale } = require('moment');
 const geod = geodesic.Geodesic.WGS84;
+
 // https://stackoverflow.com/questions/20231258/minimum-distance-between-a-point-and-a-line-in-latitude-longitude?noredirect=1&lq=1
 
 let db;
@@ -81,7 +82,7 @@ async function initializeDatabase() {
                             console.error("81Error inserting data: ", err.message);
                             reject(err);
                         } else {
-                            console.log("84Data inserted success: ", data);
+                            // console.log("84Data inserted success: ", data);
                             resolve();
                         }
                     });
@@ -95,10 +96,10 @@ async function initializeDatabase() {
                             console.error("116Error fetching routes: ", err.message);
                             reject(err);
                         } else {
-                            console.log("98Routes in db: ");
-                            rows.forEach(row => {
-                                console.log(row);
-                            });
+                            // console.log("98Routes in db: ");
+                            // rows.forEach(row => {
+                            //     // console.log("100Row", row);
+                            // });
                             resolve();
                         }
                     });
@@ -112,7 +113,7 @@ async function initializeDatabase() {
                             console.error("134Error fetching routes:", err.message);
                             reject(err);
                         } else {
-                            console.log("137Fetched route:", row);
+                            // console.log("137Fetched route:", row);
                         }
                     }, () => {
                         resolve();
@@ -177,10 +178,87 @@ class Route {
         this.proposedPickUpDistanceToRoute = null;
         this.proposedDropOffDistanceToRoute = null;
         this.orderOnRoute = false;
+        this.updateRoute = this.updateRoute.bind(this);
     }
     
+    calculateDistanceBetweenPoints(lat1, lon1, lat2, lon2) {
+        const earthRadiusKm = 6371; // Earth radius in km
+        const degreesToRadians = (degrees) => {
+            return degrees * (Math.PI / 180);
+        };
+    
+        const radLat1 = degreesToRadians(lat1);
+        const radLon1 = degreesToRadians(lon1);
+        const radLat2 = degreesToRadians(lat2);
+        const radLon2 = degreesToRadians(lon2);
+    
+        const dLat = radLat2 - radLat1;
+        const dLon = radLon2 - radLon1;
+    
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon /2 ) * Math.sin(dLon / 2);
+        const c = Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = earthRadiusKm * c; // distance in km
+        console.log("113dist: ", distance);
+        return distance;
+    }
+    convertOrderFormat(order) {
+        console.log("64Order: ", order);
+        // console.log("34: order.pickUp.latitude: ", order['pick-up'].latitude);
+        // console.log("35: order.pickUp.longitude: ", order['pick-up'].longitude);
+        // console.log("36: order.pickUp.latitude: ", order['drop-off'].latitude);
+        // console.log("37: order.pickUp.longitude: ", order['drop-off'].longitude);
+        const milesWithCargo = this.calculateDistanceBetweenPoints(order['pick-up'].latitude, order['pick-up'].longitude, order['drop-off'].latitude, order['drop-off'].longitude); // calc miles with cargo
+        const palletsOccupied = order.cargo.packages.length; // calc pallets occupied
+        const pickUpDropOffCounter = 2; // calc pick up / drop off counter
+        console.log("324: milesWithCargo: ", milesWithCargo);
+        // console.log("42: palletsOccupied: ", palletsOccupied);
+        // console.log("43: pickUpDropOffCounter: ", pickUpDropOffCounter);
+        const pointLatitude = order['pick-up'].latitude;
+        const pointLongitude = order['pick-up'].longitude;
+        return {
+            milesWithCargo,
+            palletsOccupied,
+            pickUpDropOffCounter,
+            pointLatitude,
+            pointLatitude
+        };
+    }
 
-    updateOrder(order) {
+    isOnRouteWithTurf(pointLatitude, pointLongitude) {
+        console.log("134 isOnRouteWithTurf");
+        let routeToUpdate;
+        // console.log("147routes: ", routes);
+        // const routeInfo = calculateCrossTrackDistances(routes, pointLatitude, pointLongitude);
+        const routeKey = routeInfo.routeKey;
+        const numOfRoute= routeInfo.numOfRoute;
+        
+        routeToUpdate = routeData[numOfRoute];
+        // routeToUpdate.updateOrder(transformedOrder);
+        console.log("148routeInfo: ", routeInfo);
+        console.log("223routeKey: ", routeKey);
+        console.log("149typeof: ", typeof routeInfo);
+        console.log("237numOfRoute: ", numOfRoute);
+        console.log("242R2Up: ", routeToUpdate);
+        
+        console.log("243R2Up: ", routeToUpdate);
+        if (routeInfo && typeof routeInfo === 'object') {
+            const routeKey = routeInfo.routeKey.replace('route_', 'route'); // convert to routeX
+            // console.log("138routeKey: ", routeKey);
+            // console.log("139onRoute: ", onRoute);
+            // console.log("140distance: ", distance);
+            return routeToUpdate;
+
+        } else {
+            return null;
+        }
+    }
+
+    getRouteToUpdte() {
+        return this.isOnRouteWithTurf();
+    }
+    
+    updateRoute(order) {
+        const orderInfo = this.convertOrderFormat(order);
         this.milesWithCargo = order.milesWithCargo; // fix the calculation
         this.palletsOccupied = order.palletsOccupied; // check if i need to add to the current pallets Occ
         this.pickUpDropOffCounter = order.pickUpDropOffCounter;
@@ -190,7 +268,13 @@ class Route {
         const updateQuery = `UPDATE Routes
                             SET MilesWithCarg = ?, Pallets = ?, TimeHours = ?
                             WHERE RouteNum = ?`;
-        this.db.run(updateQuery, [this.milesWithCargo, this.palletsOccupied, this.timeInMinutes/60, this.routeNumber], function(err) {
+        this.db.run(updateQuery, [
+            this.milesWithCargo, 
+            this.palletsOccupied, 
+            this.timeInMinutes/60, 
+            this.routeNumber
+        ], 
+        (err) => {
             if(err) {
                 console.log("202ErrorUpdRoute: ", err);
             } else {
@@ -239,38 +323,7 @@ class Route {
     }
 
 
-    isOnRouteWithTurf(pointLatitude, pointLongitude) {
-        console.log("134 isOnRouteWithTurf");
-        console.log("147routes: ", routes);
-        const routeInfo = calculateCrossTrackDistances(routes, pointLatitude, pointLongitude);
-        const routeKey = routeInfo.routeKey;
-        const numOfRoute= routeInfo.numOfRoute;
-        
-        routeToUpdate = routeData[numOfRoute];
-        // routeToUpdate.updateOrder(transformedOrder);
-        console.log("148routeInfo: ", routeInfo);
-        console.log("223routeKey: ", routeKey);
-        console.log("149typeof: ", typeof routeInfo);
-        console.log("237numOfRoute: ", numOfRoute);
-        console.log("242R2Up: ", routeToUpdate);
-        
-        console.log("243R2Up: ", routeToUpdate);
-        if (routeInfo && typeof routeInfo === 'object') {
-            const routeKey = routeInfo.routeKey.replace('route_', 'route'); // convert to routeX
-            // console.log("138routeKey: ", routeKey);
-            // console.log("139onRoute: ", onRoute);
-            // console.log("140distance: ", distance);
-            return {
-                onRoute: true,
-                routeKey: routeKey,
-                distance: routeInfo.distance
-            };
-        } else {
-            return {
-                onRoute: false,
-            };
-        }
-    }
+    
 }
 
 const route1 = new Route(db, 1, 'Ringgold', 101, 12, 2, 34.9161210050057, -85.1103924702221);
@@ -287,54 +340,6 @@ const routeData = {
     4: route4,
     5: route5,
 }
-
-
-
-// move to another file
-function calculateDistanceBetweenPoints(lat1, lon1, lat2, lon2) {
-    const earthRadiusKm = 6371; // Earth radius in km
-    const degreesToRadians = (degrees) => {
-        return degrees * (Math.PI / 180);
-    };
-
-    const radLat1 = degreesToRadians(lat1);
-    const radLon1 = degreesToRadians(lon1);
-    const radLat2 = degreesToRadians(lat2);
-    const radLon2 = degreesToRadians(lon2);
-
-    const dLat = radLat2 - radLat1;
-    const dLon = radLon2 - radLon1;
-
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon /2 ) * Math.sin(dLon / 2);
-    const c = Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = earthRadiusKm * c; // distance in km
-    console.log("113dist: ", distance);
-    return distance;
-}
-
-function convertOrderFormat(order) {
-    console.log("64Order: ", order);
-    // console.log("34: order.pickUp.latitude: ", order['pick-up'].latitude);
-    // console.log("35: order.pickUp.longitude: ", order['pick-up'].longitude);
-    // console.log("36: order.pickUp.latitude: ", order['drop-off'].latitude);
-    // console.log("37: order.pickUp.longitude: ", order['drop-off'].longitude);
-    const milesWithCargo = calculateDistanceBetweenPoints(order['pick-up'].latitude, order['pick-up'].longitude, order['drop-off'].latitude, order['drop-off'].longitude); // calc miles with cargo
-    const palletsOccupied = order.cargo.packages.length; // calc pallets occupied
-    const pickUpDropOffCounter = 2; // calc pick up / drop off counter
-    console.log("126: milesWithCargo: ", milesWithCargo);
-    // console.log("42: palletsOccupied: ", palletsOccupied);
-    // console.log("43: pickUpDropOffCounter: ", pickUpDropOffCounter);
-    const pointLatitude = order['pick-up'].latitude;
-    const pointLongitude = order['pick-up'].longitude;
-    return {
-        milesWithCargo,
-        palletsOccupied,
-        pickUpDropOffCounter,
-        pointLatitude,
-        pointLatitude
-    };
-}
-
 
 
 
@@ -371,8 +376,6 @@ function meets_Time(order) {
     }
 }
 
-// If meets volume, weight and time constraints, update the route
-
 
 module.exports = {
     routeData: routeData,
@@ -380,9 +383,7 @@ module.exports = {
 
 //////////////////////////////////////////////////////////////////////////
 let routeToUpdate;
-// route1.updateOrder(transformedOrder);
 
-// Get coordinates for testing
 
 
 
@@ -391,7 +392,7 @@ function processOrder(order, aw_initDB, aw_procOrd) {
         const transformedOrder = convertOrderFormat(order);
         if (meets_Volume && meets_Weight && meets_Time) {
             // routeToUpdate.updateOrder(transformedOrder);
-            updateOrder(transformedOrder);
+            updateRoute(transformedOrder);
             // console.log("275R2Up: ", routeToUpdate);    
             // update price
         } else {
@@ -403,11 +404,12 @@ function processOrder(order, aw_initDB, aw_procOrd) {
 async function startOrderProcessing(order, routeToUpdate) {
     try {
         await initializeDatabase();
-        
-        let aw_procOrd = await processOrder(order);
+        const routeInstance = new Route();
+        const aw_procOrd = routeInstance.convertOrderFormat(order);
+        routeToUpdate.updateRoute(aw_procOrd);
         return "Order processed successfully";
     } catch (error) {
-        throw new Error (`Order processing failed: ${error}`);
+        throw new Error (`465,Order processing failed: ${error}`);
     }
 }
 
@@ -432,7 +434,7 @@ const order = {
 //     "{lat: 33.78015129657219,lng: -84.34128279641483}",
 //     "{lat: 33.662866638790945,lng: -84.26739402810634}"
 // }
-
+const routeInfo = calculateCrossTrackDistances(routes, order['pick-up'].latitude, order['pick-up'].longitude);
 startOrderProcessing(order)
     .then((successMessage) => {
         console.log(successMessage);
