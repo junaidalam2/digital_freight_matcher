@@ -25,6 +25,9 @@ function createTable() {
     const sql_route5 = 'CREATE TABLE IF NOT EXISTS orders_route5 (id INTEGER PRIMARY KEY, order_id, cargo_volume, cargo_weight, cargo_type, pickup_lat, pickup_lon, drop_lat, drop_lon, valid, pickup_intersect_lat, pickup_intersect_lon, drop_intersect_lat, drop_intersect_lon, distance_to_pickup, distance_to_drop, distance_on_route, direction_to_anchor, timestamp, order_accepted)';
     db.run(sql_route5);
     
+    const sql_route1_to_anchor = 'CREATE TABLE IF NOT EXISTS orders_to_anchor_route1 (id INTEGER PRIMARY KEY, distance_from_hub, weight, volume, orders_id_array, within_weight, within_volume, within_time, timestamp, order_accepted)';
+    db.run(sql_route1_to_anchor);
+
     const sql_rejected = 'CREATE TABLE IF NOT EXISTS orders_rejected (id INTEGER PRIMARY KEY, order_id)';
     db.run(sql_rejected);
 
@@ -106,9 +109,21 @@ function executeQuery(query) {
 }
 
 
+async function checkIfTableEmpty(table) {
+    
+    try {
 
+        const sql = `SELECT count(*) FROM ${table}`;
+        const result = await executeQuery(sql);
+        return result[0]['count(*)']
 
-// Example usage
+        } catch (error) {
+        console.error(error);
+    }
+    
+    
+};
+
 
 async function dbSelectAllRanked(table, wherecolumn, whereCondition, orderByColumn, orderDirection) {
     
@@ -155,5 +170,6 @@ module.exports = {
     dropTable,
     dbCreateRecordRejectedOrder,
     dbSelectAllRanked,
+    checkIfTableEmpty,
 
 };

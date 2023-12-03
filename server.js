@@ -143,18 +143,58 @@ function runParser() {
 
 }
   
+//runParser()
 
 
+function addPotentialOrdersToRoute(orders, direction_to_anchor) {
+
+
+    //console.log(dbServerSqlite.checkIfTableEmpty("orders_to_anchor_route1"))
+
+    dbServerSqlite.checkIfTableEmpty("orders_to_anchor_route1")
+    .then( count => {
+        console.log(count)
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
+
+
+    if(direction_to_anchor) {
+        
+        //if table empty, add global order
+    }
+
+    // find previous order on => max km less than km of order
+    // add weight, capacity and time to each record
+    // add drop off point => weight (of next record), capcity (of next record) and time
+    
+    // check if break constraints
+    // if don't, we're fine
+    // if do, revert table
+
+}
+
+
+
+
+/*
 let rowsAll
 
 dbServerSqlite.dbSelectAllRanked("orders_route1", "direction_to_anchor", "true", "distance_on_route", "DESC")
     .then(rows => {
         rowsAll = rows;
         console.log(rows);
+        
     })
     .catch(error => {
         console.error(error);
     });
+*/
+
+
+
 
 /*
 
